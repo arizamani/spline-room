@@ -1,0 +1,75 @@
+body {
+  margin: 0;
+}
+html,
+body {
+  height: 100%;
+	overflow: hidden;
+}
+canvas {
+  display: block;
+}
+
+.change-text-container{
+  z-index: 999;
+  position: absolute;
+  top: 80px;
+  left: 80px;
+  display: flex;
+  column-gap: 10px;
+}
+
+.flex-column{
+  flex-direction: column;
+}
+
+.true-condition{
+  color: darkseagreen;
+}
+
+.false-condition{
+  color:crimson;
+}
+
+.waiting-condition{
+  color:deepskyblue;
+}
+
+.waiting-animation-bar{
+  position: relative;
+  height: 16px;
+  width: 28px;
+  background: deepskyblue;
+  display: flex;
+}
+
+.hide{
+  display: none;
+}
+
+.flex-show{
+  display: flex;
+}
+
+.row{
+  display: flex;
+  flex-direction: row;
+  column-gap: 10px;
+  align-items: center;
+}
+
+.change-text-container-notification{
+  color:#fff;
+}
+
+/*GUI*/
+#gui-container{
+  position: fixed;
+  top: 0;
+  right: 0;
+  overflow-y: scroll;
+  max-height: 100vh;
+}
+.lil-gui.root > .children .title{
+  color: chartreuse;
+}

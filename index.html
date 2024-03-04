@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./src/styles.css" />
+  </head>
+  <body>
+    <!-- <canvas id="canvas3d"></canvas> -->
+    <div class="change-text-container flex-column">
+      <div class="row">
+        <input type="text" id="change-text-input" name="change-text-input" placeholder="Enter the spline Link ...">
+        <button id="change-text-btn">Load</button>
+      </div>
+      <div class="row">
+        <p id="change-text-container-notification" class="notification"></p>
+        <div id="change-text-container-notification-bar" class="waiting-animation-bar hide"></div>
+      </div>
+    </div>
+    <div id="gui-container"></div>
+
+    <!-- Import maps polyfill -->
+    <!-- Remove this when import maps will be widely supported -->
+    <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "@splinetool/runtime": "https://unpkg.com/@splinetool/runtime@1.0.51/build/runtime.js",
+          "lil-gui": "https://cdn.jsdelivr.net/npm/lil-gui@0.19/+esm",
+          "underscore" : "https://unpkg.com/underscore@1.13.6/underscore-esm-min.js",
+          "anime": "https://cdn.jsdelivr.net/npm/animejs@3.2.2/+esm"
+        }
+      }
+    </script>
+
+    <script type="module"> 
+        import {splineApp} from "./src/spline-app.js";
+        import {Custom_GUI} from "./src/gui.js";
+        import _ from "underscore";
+        import anime from "anime";
+
+        let app,guiVariables,guiObjects,scene=[];
+
+
+
+        let changeTextCTA = document.getElementById("change-text-btn");
+        let changeTextInput = document.getElementById("change-text-input");
+        let changeTextNotification = document.getElementById("change-text-container-notification");
+        let changeTextNotificationBar = document.getElementById("change-text-container-notification-bar");
+
+
+        changeTextCTA.addEventListener("click",loadSplineModels);
+
+        async function splineData(canvas,url){
+          let data =  await splineApp(canvas,url);
+
+          return data;
+        }
+
+        function isValidUrl(input) {
+          try {
+            new URL(input);
+            return true; // No error means it's a valid URL
+          } catch (e) {
+            return false; // An error indicates it's not a valid URL
+          }
+        }
+
+        function loadSplineModels(e){
+          let app;
+          let href = changeTextInput.value;
+          toggleTruthy(changeTextNotification,"waiting-condition","true-condition","false-condition");
+          changeTextNotification.innerText = "Waiting";
+          let waiting = waitingPresentaionStart(changeTextNotificationBar);
+
+
+          if(isValidUrl(href)){
+            /*Rmove previuos---------Start---------------*/
+            if (document.getElementById("canvas3d")){
+              document.getElementById("canvas3d").remove();
+            }
+            let canvas = document.createElement('canvas');
+            canvas.id = "canvas3d";
+            document.body.insertBefore(canvas,document.body.firstChild);
+
+            if(_.isObject(guiObjects)) guiObjects.destroy();
+            if(_.isObject(guiVariables)) guiVariables.destroy();
+            /*Rmove previuos---------End-----------------*/
+            splineData(canvas,href).then(app =>{
+                waitingPresentaionEnd(changeTextNotificationBar,waiting);
+                toggleTruthy(changeTextNotification,"true-condition","false-condition","waiting-condition");
+                changeTextNotification.innerText = "Load Spline Models Successfully.";
+                // console.log(app.getVariables());
+                // console.log(app.getAllObjects());
+                // let objects = app.getAllObjects();
+                scene.push({
+                  scene: scene.length + 1,
+                  objects: app.getAllObjects()
+                });
+                console.log(scene)
+                guiObjects = new Custom_GUI({title:"3D Models",container: document.getElementById("gui-container")});
+                guiObjects.objects(app);
+
+                guiVariables = new Custom_GUI({title:"Variables",container: document.getElementById("gui-container")});
+                guiVariables.variables(app);
+            }).catch(e => {
+              waitingPresentaionEnd(changeTextNotificationBar,waiting);
+              toggleTruthy(changeTextNotification,"false-condition","true-condition","waiting-condition");
+              changeTextNotification.innerText = e.message;
+              console.log(e)
+            })
+
+          }else{
+            waitingPresentaionEnd(changeTextNotificationBar,waiting);
+            toggleTruthy(changeTextNotification,"false-condition","true-condition","waiting-condition");
+            changeTextNotification.innerText = "Oops! This URL is Not Valid...";
+          }
+
+
+        }
+
+        function toggleTruthy(domElement,addClassName,...removeClassName){
+          if(!domElement.classList.contains(addClassName)){
+            domElement.classList.add(addClassName);
+          }
+          removeClassName.forEach( c => {
+            if(domElement.classList.contains(c)){
+              domElement.classList.remove(c);
+            }
+          });
+        }
+
+        function waitingPresentaionStart(target){
+          toggleTruthy(target,"showflex","hide");
+          return anime({
+            targets: target,
+            width: '68px', // -> from '28px' to '100%',
+            easing: 'easeInOutQuad',
+            direction: 'alternate',
+            loop: true
+          });
+        }
+
+        function waitingPresentaionEnd(target,animation){
+          toggleTruthy(target,"hide","showflex");
+          animation.remove(target);
+          animation.restart();
+        }
+
+
+
+
+    </script>
+  </body>
+</html>
+
