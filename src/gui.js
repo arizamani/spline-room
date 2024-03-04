@@ -58,6 +58,7 @@ class Custom_GUI extends GUI{
             });
             
             // console.log(this._splineApp.findObjectByName("Window"))
+            this.close(); 
             this.show(); 
         }
 
