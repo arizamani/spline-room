@@ -16,6 +16,12 @@
         <p id="change-text-container-notification" class="notification"></p>
         <div id="change-text-container-notification-bar" class="waiting-animation-bar hide"></div>
       </div>
+      <div class="col">
+        <p class="description"><span>Model 1 (Room):</span><span>https://prod.spline.design/cxbR6WUPUE6hp42d/scene.splinecode</span></p>
+        <p class="description"><span>Model 2 (Rabbits):</span><span>https://prod.spline.design/dw0Irg1i5XgUXAoN/scene.splinecode</span></p>
+        <p class="description"><span>Model 3 (Table):</span><span>https://prod.spline.design/V-0PLllClQCbEqX0/scene.splinecode</span></p>
+        
+      </div>
     </div>
     <div id="gui-container"></div>
 
@@ -39,7 +45,7 @@
         import _ from "underscore";
         import anime from "anime";
 
-        let app,guiVariables,guiObjects,scene=[];
+        let app,gui,scene=[];
 
 
 
@@ -93,16 +99,8 @@
                 // console.log(app.getVariables());
                 // console.log(app.getAllObjects());
                 // let objects = app.getAllObjects();
-                scene.push({
-                  scene: scene.length + 1,
-                  objects: app.getAllObjects()
-                });
-                console.log(scene)
-                guiObjects = new Custom_GUI({title:"3D Models",container: document.getElementById("gui-container")});
-                guiObjects.objects(app);
-
-                guiVariables = new Custom_GUI({title:"Variables",container: document.getElementById("gui-container")});
-                guiVariables.variables(app);
+                gui = new Custom_GUI(app);
+                gui.init(app);
             }).catch(e => {
               waitingPresentaionEnd(changeTextNotificationBar,waiting);
               toggleTruthy(changeTextNotification,"false-condition","true-condition","waiting-condition");
