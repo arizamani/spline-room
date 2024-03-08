@@ -230,7 +230,7 @@ class Custom_GUI extends GUI{
             _.each(windows, m => {
                 let parameterName = _.keys(m)[0];
                 let initialValue = _.values(m)[0];
-                console.log(initialValue)
+                // console.log(initialValue)
                 windowsFolder.add( m, parameterName, 80, 200,10 ).onChange( value => {
                     this.#updateWindows(parameterName,value);
                 });

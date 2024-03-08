@@ -9,18 +9,12 @@
     <!-- <canvas id="canvas3d"></canvas> -->
     <div class="change-text-container flex-column">
       <div class="row">
-        <input type="text" id="change-text-input" name="change-text-input" placeholder="Enter the spline Link ...">
+        <input type="text" id="change-text-input" name="change-text-input" placeholder="Enter the spline Link ..." value="https://prod.spline.design/Yi9AfuN6HJS96AXu/scene.splinecode">
         <button id="change-text-btn">Load</button>
       </div>
       <div class="row">
         <p id="change-text-container-notification" class="notification"></p>
         <div id="change-text-container-notification-bar" class="waiting-animation-bar hide"></div>
-      </div>
-      <div class="col">
-        <p class="description"><span>Model 1 (Room):</span><span>https://prod.spline.design/cxbR6WUPUE6hp42d/scene.splinecode</span></p>
-        <p class="description"><span>Model 2 (Rabbits):</span><span>https://prod.spline.design/dw0Irg1i5XgUXAoN/scene.splinecode</span></p>
-        <p class="description"><span>Model 3 (Table):</span><span>https://prod.spline.design/V-0PLllClQCbEqX0/scene.splinecode</span></p>
-        
       </div>
     </div>
     <div id="gui-container"></div>
@@ -89,8 +83,7 @@
             canvas.id = "canvas3d";
             document.body.insertBefore(canvas,document.body.firstChild);
 
-            if(_.isObject(guiObjects)) guiObjects.destroy();
-            if(_.isObject(guiVariables)) guiVariables.destroy();
+            if(_.isObject(gui)) gui.destroy();
             /*Rmove previuos---------End-----------------*/
             splineData(canvas,href).then(app =>{
                 waitingPresentaionEnd(changeTextNotificationBar,waiting);
