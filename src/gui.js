@@ -10,7 +10,7 @@ class Custom_GUI extends GUI{
             length: 300,
             thickness: 5,
             height: 300,
-            min: 200,
+            min: 210,
             max: 500,
             state:{
                 rightWall: true,
@@ -38,7 +38,10 @@ class Custom_GUI extends GUI{
                 backWindow: false,
                 leftWindow: false,
                 frontWindow: false,
-            }
+            },
+            width:100,
+            hieght: 150,
+            extrude: 2
         }
         this.cornice = {
             thickness: 1,
@@ -50,10 +53,19 @@ class Custom_GUI extends GUI{
         }
         this.furnitures = {
             cube: "Cube",
-            toilet: "Toilet"
+            toilet: "Toilet",
+            radiator: {
+                name: "Radiator",
+                thickness: 5.6,
+                height: 96,
+                width: 154
+            }
         }
         this.doors = {
-            backDoor : "DWB"
+            backDoor : "DWB",
+            width: 98,
+            height: 209,
+            thickness: 4
         }
         this.controllers = [];
     }
@@ -172,18 +184,48 @@ class Custom_GUI extends GUI{
             let WWR_yMax = this.walls.height - (this.windowFixedToCeil + app.getVariable("windowFrameHeight_WWR")/2); 
             let WWR_zMin = -Infinity;
             let WWR_zMax = Infinity;
-            // console.log(` 
-            //     ${WWR_xMin} ,
-            //     ${WWR_xMax} ,
-            //     ${WWR_yMin} ,
-            //     ${WWR_yMax} , 
-            //     ${WWR_zMin} ,
-            //     ${WWR_zMax} ,
-            //     `)
+
             this.#setDragDropLimits(this.windows.rightWindow,"DragDrop","limits",WWR_xMin , WWR_xMax , WWR_yMin , WWR_yMax , WWR_zMin , WWR_zMax);
+            this.#getObjectByName("WWR_MF").visible = false;
+            this.#getObjectByName("WWR_MLF").visible = false;
+            this.#getObjectByName("WWR_MRF").visible = false;
             windowsFolder.add( {"Window Right" : false} , "Window Right").onChange( value => {
                 this.#getObjectByName(this.windows.rightWindow).visible = value;
                 this.windows.state.rightWindow = value;
+            });
+            windowsFolder.add( {"Panel Number" : 1} , "Panel Number", [1,2,3,4]).onChange( value => {
+                switch (value) {
+                    case 1:
+                        this.#getObjectByName("WWR_MF").visible = false;
+                        this.#getObjectByName("WWR_MLF").visible = false;
+                        this.#getObjectByName("WWR_MRF").visible = false;
+                        break;
+                    case 2:
+                        this.#getObjectByName("WWR_MF").visible = true;
+                        this.#getObjectByName("WWR_MLF").visible = false;
+                        this.#getObjectByName("WWR_MRF").visible = false;
+                        break;  
+                    case 3:
+                        this.#getObjectByName("WWR_MLF").position.z = (this.windows.width/2 - this.windows.extrude/2)/3;
+                        this.#getObjectByName("WWR_MRF").position.z = -(this.windows.width/2 - this.windows.extrude/2)/3;
+                        this.#getObjectByName("WWR_MF").visible = false;
+                        this.#getObjectByName("WWR_MLF").visible = true;
+                        this.#getObjectByName("WWR_MRF").visible = true;
+                        break; 
+                    case 4:
+                        this.#getObjectByName("WWR_MLF").position.z = (this.windows.width/2 - this.windows.extrude/2)/2;
+                        this.#getObjectByName("WWR_MRF").position.z = -(this.windows.width/2 - this.windows.extrude/2)/2;
+                        this.#getObjectByName("WWR_MF").visible = true;
+                        this.#getObjectByName("WWR_MLF").visible = true;
+                        this.#getObjectByName("WWR_MRF").visible = true;
+                        break;               
+                    default:
+                        this.#getObjectByName("WWR_MF").visible = false;
+                        this.#getObjectByName("WWR_MLF").visible = false;
+                        this.#getObjectByName("WWR_MRF").visible = false;
+                        break;
+                }
+                
             });
             //For Back window
             this.#getObjectByName(this.windows.backWindow).visible = false;
@@ -195,9 +237,46 @@ class Custom_GUI extends GUI{
             let WWB_xMax = Infinity;
 
             this.#setDragDropLimits(this.windows.backWindow,"DragDrop","limits",WWB_xMin , WWB_xMax , WWB_yMin , WWB_yMax , WWB_zMin , WWB_zMax);
+            this.#getObjectByName("WWB_MF").visible = false;
+            this.#getObjectByName("WWB_MLF").visible = false;
+            this.#getObjectByName("WWB_MRF").visible = false;
             windowsFolder.add( {"Window Back" : false} , "Window Back").onChange( value => {
                 this.#getObjectByName(this.windows.backWindow).visible = value;
                 this.windows.state.backWindow = value;
+            });
+            windowsFolder.add( {"Panel Number" : 1} , "Panel Number", [1,2,3,4]).onChange( value => {
+                switch (value) {
+                    case 1:
+                        this.#getObjectByName("WWB_MF").visible = false;
+                        this.#getObjectByName("WWB_MLF").visible = false;
+                        this.#getObjectByName("WWB_MRF").visible = false;
+                        break;
+                    case 2:
+                        this.#getObjectByName("WWB_MF").visible = true;
+                        this.#getObjectByName("WWB_MLF").visible = false;
+                        this.#getObjectByName("WWB_MRF").visible = false;
+                        break;  
+                    case 3:
+                        this.#getObjectByName("WWB_MLF").position.z = (this.windows.width/2 - this.windows.extrude/2)/3;
+                        this.#getObjectByName("WWB_MRF").position.z = -(this.windows.width/2 - this.windows.extrude/2)/3;
+                        this.#getObjectByName("WWB_MF").visible = false;
+                        this.#getObjectByName("WWB_MLF").visible = true;
+                        this.#getObjectByName("WWB_MRF").visible = true;
+                        break; 
+                    case 4:
+                        this.#getObjectByName("WWB_MLF").position.z = (this.windows.width/2 - this.windows.extrude/2)/2;
+                        this.#getObjectByName("WWB_MRF").position.z = -(this.windows.width/2 - this.windows.extrude/2)/2;
+                        this.#getObjectByName("WWB_MF").visible = true;
+                        this.#getObjectByName("WWB_MLF").visible = true;
+                        this.#getObjectByName("WWB_MRF").visible = true;
+                        break;               
+                    default:
+                        this.#getObjectByName("WWB_MF").visible = false;
+                        this.#getObjectByName("WWB_MLF").visible = false;
+                        this.#getObjectByName("WWB_MRF").visible = false;
+                        break;
+                }
+                
             });
             //For Left window
             this.#getObjectByName(this.windows.leftWindow).visible = false;
@@ -238,22 +317,24 @@ class Custom_GUI extends GUI{
         }
 
         /*Create datas => Doors*/
-        // if (!_.isEmpty(doors)){
-        //     let doorsFolder = this.addFolder("Doors");
-        //     //For Back Door
-        //     this.#getObjectByName(this.doors.backDoor).visible = false;
-        //     doorsFolder.add( {"Door Back" : false} , "Door Back").onChange( value => {
-        //         this.#getObjectByName(this.doors.backDoor).visible = value;
-        //     });
-        //     _.each(doors, m => {
-        //         let parameterName = _.keys(m)[0];
-        //         let initialValue = _.values(m)[0];
-        //         doorsFolder.add( m, parameterName, 150, 230,10 ).onChange( value => {
-        //             this.#updateWindows(parameterName,value);
-        //         });
+        if (!_.isEmpty(doors)){
+            this.#setDragDropLimits(this.doors.backDoor,"DragDrop","limits",-(this.floor.length/2 - this.walls.thickness - this.doors.thickness),(this.floor.length/2 - this.walls.thickness - this.doors.thickness),(this.doors.height/2),(this.doors.height/2 + 0.1),-(this.floor.width/2 - this.walls.thickness),(this.floor.width/2 - this.walls.thickness));
+            let doorsFolder = this.addFolder("Doors");
+            //For Back Door
+            this.#getObjectByName(this.doors.backDoor).visible = false;
+            doorsFolder.add( {"Door Back" : false} , "Door Back").onChange( value => {
+                this.#getObjectByName(this.doors.backDoor).visible = value;
+            });
+        }
 
-        //     });
-        // }
+        /*Create datas => Furnitures*/
+        // this.#setDragDropLimits(this.furnitures.radiator,"DragDrop","limits",-(this.floor.length/2 - this.walls.thickness - this.doors.thickness),(this.floor.length/2 - this.walls.thickness - this.doors.thickness),(this.doors.height/2),(this.doors.height/2 + 0.1),-(this.floor.width/2 - this.walls.thickness),(this.floor.width/2 - this.walls.thickness));
+        // let doorsFolder = this.addFolder("Doors");
+        // //For Back Door
+        // this.#getObjectByName(this.doors.backDoor).visible = false;
+        // doorsFolder.add( {"Door Back" : false} , "Door Back").onChange( value => {
+        //     this.#getObjectByName(this.doors.backDoor).visible = value;
+        // });
         
         // console.log(app.findObjectByName("Window"))
         
@@ -301,6 +382,9 @@ class Custom_GUI extends GUI{
         let limits_WWL =  this.getEventData(this.windows.leftWindow,"DragDrop","limits");
         let limits_WWF =  this.getEventData(this.windows.frontWindow,"DragDrop","limits");
 
+        let limits_DWB =  this.getEventData(this.doors.backDoor,"DragDrop","limits");
+        // this._splineApp._resize();
+        // console.log(limits_DWB);
         switch (parameter) {
             case "floorWidth":
                 this.floor.width = value;
@@ -340,6 +424,9 @@ class Custom_GUI extends GUI{
                 this.#getObjectByName(this.cornice.rightCornice).position.z = -(value/2 - this.walls.thickness - this.cornice.thickness/2);
                 this.#getObjectByName(this.cornice.leftCornice).position.z = (value/2 - this.walls.thickness - this.cornice.thickness/2)
                 this._splineApp.setVariable("corniceLengthFB",value - 0.5);
+
+                //Door
+                this.#setDragDropLimits(this.doors.backDoor,"DragDrop","limits",-(this.floor.length/2 - this.walls.thickness),(this.floor.length/2 - this.walls.thickness),limits_DWB[2],limits_DWB[3],-(value/2 - this.walls.thickness),(value/2 - this.walls.thickness));
                 break;
             case "floorLength":
                 this.floor.length = value;
@@ -379,7 +466,8 @@ class Custom_GUI extends GUI{
                 this.#getObjectByName(this.cornice.frontCornice).position.x = (value/2 - this.walls.thickness - this.cornice.thickness/2);
                 this.#getObjectByName(this.cornice.backCornice).position.x = -(value/2 - this.walls.thickness - this.cornice.thickness/2)
                 this._splineApp.setVariable("corniceLengthRL",value - 0.5);
-                
+                //Door
+                this.#setDragDropLimits(this.doors.backDoor,"DragDrop","limits",-(value/2 - this.walls.thickness),(value/2 - this.walls.thickness),limits_DWB[2],limits_DWB[3],-(this.floor.width/2 - this.walls.thickness),(this.floor.width/2 - this.walls.thickness));
                 break;      
             case "wallsHeight":
                 //Walls
@@ -455,7 +543,7 @@ class Custom_GUI extends GUI{
             /*Right Window*/
             case "windowFrameWidth_WWR":
                 let WWR_scaleX = (1 + (value - windowFrameWidthWWR)/windowFrameWidthWWR);
-                this.#getObjectByName(this.windows.rightWindow).scale.x = WWR_scaleX;
+                this.#getObjectByName(this.windows.rightWindow).scale.z = WWR_scaleX;
                 this.#setDragDropLimits(this.windows.rightWindow,"DragDrop","limits",-(this.floor.length/2 - value/2 - this.walls.thickness - this.windowFixedToSide),(this.floor.length/2 - value/2 - this.windowFixedToSide),limits_WWR[2],limits_WWR[3],-Infinity,Infinity);
                 /*this is an additional limitaion for window position
                 in y deirection 'relative' to the Length wall*/
@@ -486,7 +574,8 @@ class Custom_GUI extends GUI{
             /*Back Window*/   
             case "windowFrameWidth_WWB":  
                 let WWB_scaleX = (1 + (value - windowFrameWidthWWB)/windowFrameWidthWWB);
-                this.#getObjectByName(this.windows.backWindow).scale.x = WWB_scaleX;
+                console.log(WWB_scaleX)
+                this.#getObjectByName(this.windows.backWindow).scale.z = WWB_scaleX;
                 this.#setDragDropLimits(this.windows.backWindow,"DragDrop","limits",-Infinity,Infinity,limits_WWB[2],limits_WWB[3],-(this.floor.width/2 - value/2 - this.walls.thickness - this.windowFixedToSide),(this.floor.width/2 - value/2 - this.windowFixedToSide));
                 /*this is an additional limitaion for window position
                 in y deirection 'relative' to the Length wall*/
