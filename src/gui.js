@@ -9,11 +9,12 @@ class Custom_GUI extends GUI{
         this.windowFixedToFloor = 15;
         this.windowFixedToCeil = 15;
         this.windowFixedToSide = 10;
+        this.roomMinHeight = 230;
         this.walls = {
             length: 300,
             thickness: 5,
             height: 300,
-            min: 210,
+            min: 230,
             max: 500,
             state:{
                 rightWall: true,
@@ -681,7 +682,7 @@ class Custom_GUI extends GUI{
                     this.#findControllers("windowFrameHeight_WWF").getValue() + this.windowFixedToFloor + this.windowFixedToCeil + 1,
                     // this.windowFixedToFloor + this.windowFixedToCeil + this.windows.hieght + 1,
                     // this.windowFixedToFloor + this.windowFixedToCeil + value + 1,
-                    210
+                    this.roomMinHeight
                 );
                 this.#findControllers("wallsHeight").min(this.walls.min);
                 this.#findControllers("wallsHeight").updateDisplay();
@@ -738,7 +739,7 @@ class Custom_GUI extends GUI{
                     this.#findControllers("windowFrameHeight_WWF").getValue() + this.windowFixedToFloor + this.windowFixedToCeil + 1,
                     // this.windowFixedToFloor + this.windowFixedToCeil + this.windows.hieght + 1,
                     // this.windowFixedToFloor + this.windowFixedToCeil + value + 1,
-                    210
+                    this.roomMinHeight
                 );
                 this.#findControllers("wallsHeight").min(this.walls.min);
                 this.#findControllers("wallsHeight").updateDisplay();
@@ -792,7 +793,7 @@ class Custom_GUI extends GUI{
                     this.#findControllers("windowFrameHeight_WWF").getValue() + this.windowFixedToFloor + this.windowFixedToCeil + 1,
                     // this.windowFixedToFloor + this.windowFixedToCeil + this.windows.hieght + 1,
                     // this.windowFixedToFloor + this.windowFixedToCeil + value + 1,
-                    210
+                    this.roomMinHeight
                 );
                 this.#findControllers("wallsHeight").min(this.walls.min);
                 this.#findControllers("wallsHeight").updateDisplay();
@@ -846,7 +847,7 @@ class Custom_GUI extends GUI{
                     this.#findControllers("windowFrameHeight_WWF").getValue() + this.windowFixedToFloor + this.windowFixedToCeil + 1,
                     // this.windowFixedToFloor + this.windowFixedToCeil + this.windows.hieght + 1,
                     // this.windowFixedToFloor + this.windowFixedToCeil + value + 1,
-                    210
+                    this.roomMinHeight
                 );
                 this.#findControllers("wallsHeight").min(this.walls.min);
                 this.#findControllers("wallsHeight").updateDisplay();
