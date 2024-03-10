@@ -16,6 +16,9 @@
         <p id="change-text-container-notification" class="notification"></p>
         <div id="change-text-container-notification-bar" class="waiting-animation-bar hide"></div>
       </div>
+      <div class="row">
+        <button id="log">log</button>
+      </div>
     </div>
     <div id="gui-container"></div>
 
@@ -47,9 +50,10 @@
         let changeTextInput = document.getElementById("change-text-input");
         let changeTextNotification = document.getElementById("change-text-container-notification");
         let changeTextNotificationBar = document.getElementById("change-text-container-notification-bar");
-
+        let logCTA = document.getElementById("log");
 
         changeTextCTA.addEventListener("click",loadSplineModels);
+
 
         async function splineData(canvas,url){
           let data =  await splineApp(canvas,url);
@@ -94,6 +98,9 @@
                 // let objects = app.getAllObjects();
                 gui = new Custom_GUI(app);
                 gui.init(app);
+                logCTA.addEventListener("click",function(){
+                  console.log(app);
+                });
             }).catch(e => {
               waitingPresentaionEnd(changeTextNotificationBar,waiting);
               toggleTruthy(changeTextNotification,"false-condition","true-condition","waiting-condition");

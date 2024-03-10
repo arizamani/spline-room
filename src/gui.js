@@ -64,7 +64,7 @@ class Custom_GUI extends GUI{
             radiator: {
                 name: "Radiator",
                 thickness: 5.6,
-                height: 96,
+                height: 62.9,
                 width: 154
             }
         }
@@ -72,7 +72,21 @@ class Custom_GUI extends GUI{
             backDoor : "DWB",
             width: 98,
             height: 209,
-            thickness: 4
+            thickness: 4,
+            state: {
+                backDoor:{
+                    close: {
+                        x: 0,
+                        z: -2.69,
+                        rotationY: 0
+                    },
+                    open: {
+                        x: 38,
+                        z: 35,
+                        rotationY: 1.57
+                    }
+                }
+            }
         }
         this.controllers = [];
     }
@@ -80,14 +94,16 @@ class Custom_GUI extends GUI{
     init(app){
 
         let variables = app.getVariables();
+        // let objects = app.getAllObjects();
         let filteredWalls = {};
-        let controllers;
+        // console.log(objects);
         
         /*v is the name of model in spline platform*/
         let walls = this.#findKey(variables,"wall");
         let floor = this.#findKey(variables,"floor");
         let windows = this.#findKey(variables,"windowFrame");
         let doors = this.#findKey(variables,"door");
+        // let doorlines = this.#findKey(objects,"Doorlines");
         // console.log(windows);
 
         /*Create datas => floor*/
@@ -428,16 +444,37 @@ class Custom_GUI extends GUI{
             doorsFolder.add( {"Door Back" : false} , "Door Back").onChange( value => {
                 this.#getObjectByName(this.doors.backDoor).visible = value;
             });
+            this.#getObjectByName("Doorlines").visible = false;
+            this.#getObjectByName("Doorlines 2").visible = false;
+            this.#getObjectByName("Doorlines 3").visible = false;
+            this.#getObjectByName("Doorlines 4").visible = false;
+            doorsFolder.add( {"Door Lines" : false} , "Door Lines").onChange( value => {
+                this.#getObjectByName("Doorlines").visible = value;
+                this.#getObjectByName("Doorlines 2").visible = value;
+                this.#getObjectByName("Doorlines 3").visible = value;
+                this.#getObjectByName("Doorlines 4").visible = value;
+            });
+            doorsFolder.add( {"Open" : false} , "Open").onChange( value => {
+                if (value){
+                    this.#getObjectByName("DoorMain").position.x = this.doors.state.backDoor.open.x;
+                    this.#getObjectByName("DoorMain").position.z = this.doors.state.backDoor.open.z;
+                    this.#getObjectByName("DoorMain").rotation.y = this.doors.state.backDoor.open.rotationY;
+                }else{
+                    this.#getObjectByName("DoorMain").position.x = this.doors.state.backDoor.close.x;
+                    this.#getObjectByName("DoorMain").position.z = this.doors.state.backDoor.close.z;
+                    this.#getObjectByName("DoorMain").rotation.y = this.doors.state.backDoor.close.rotationY;                   
+                }
+            });
         }
 
         /*Create datas => Furnitures*/
-        // this.#setDragDropLimits(this.furnitures.radiator,"DragDrop","limits",-(this.floor.length/2 - this.walls.thickness - this.doors.thickness),(this.floor.length/2 - this.walls.thickness - this.doors.thickness),(this.doors.height/2),(this.doors.height/2 + 0.1),-(this.floor.width/2 - this.walls.thickness),(this.floor.width/2 - this.walls.thickness));
-        // let doorsFolder = this.addFolder("Doors");
-        // //For Back Door
-        // this.#getObjectByName(this.doors.backDoor).visible = false;
-        // doorsFolder.add( {"Door Back" : false} , "Door Back").onChange( value => {
-        //     this.#getObjectByName(this.doors.backDoor).visible = value;
-        // });
+        this.#setDragDropLimits(this.furnitures.radiator.name,"DragDrop","limits",-(this.floor.length/2 - this.walls.thickness - this.furnitures.radiator.thickness),(this.floor.length/2 - this.walls.thickness - this.furnitures.radiator.thickness),(this.furnitures.radiator.height/2),(this.furnitures.radiator.height/2 + 0.1),-(this.floor.width/2 - this.walls.thickness),(this.floor.width/2 - this.walls.thickness));
+        let furnituresFolder = this.addFolder("Furnitures");
+        //For Back Door
+        this.#getObjectByName(this.furnitures.radiator.name).visible = false;
+        furnituresFolder.add( {"Radiator" : false} , "Radiator").onChange( value => {
+            this.#getObjectByName(this.furnitures.radiator.name).visible = value;
+        });
         
         // console.log(app.findObjectByName("Window"))
         
@@ -472,6 +509,7 @@ class Custom_GUI extends GUI{
         let limits_WWF =  this.getEventData(this.windows.frontWindow,"DragDrop","limits");
 
         let limits_DWB =  this.getEventData(this.doors.backDoor,"DragDrop","limits");
+        let limits_Radiator =  this.getEventData(this.furnitures.radiator.name,"DragDrop","limits");
         // this._splineApp._resize();
         // console.log(limits_DWB);
         switch (parameter) {
@@ -520,6 +558,8 @@ class Custom_GUI extends GUI{
 
                 //Door
                 this.#setDragDropLimits(this.doors.backDoor,"DragDrop","limits",-(this.floor.length/2 - this.walls.thickness),(this.floor.length/2 - this.walls.thickness),limits_DWB[2],limits_DWB[3],-(value/2 - this.walls.thickness),(value/2 - this.walls.thickness));
+                //Radiator
+                this.#setDragDropLimits(this.furnitures.radiator.name,"DragDrop","limits",-(this.floor.length/2 - this.walls.thickness),(this.floor.length/2 - this.walls.thickness),limits_Radiator[2],limits_Radiator[3],-(value/2 - this.walls.thickness),(value/2 - this.walls.thickness));
                 break;
             case "floorLength":
                 this.floor.length = value;
@@ -565,6 +605,8 @@ class Custom_GUI extends GUI{
                 this._splineApp.setVariable("corniceLengthRL",value - 0.5);
                 //Door
                 this.#setDragDropLimits(this.doors.backDoor,"DragDrop","limits",-(value/2 - this.walls.thickness),(value/2 - this.walls.thickness),limits_DWB[2],limits_DWB[3],-(this.floor.width/2 - this.walls.thickness),(this.floor.width/2 - this.walls.thickness));
+                //Radiator
+                this.#setDragDropLimits(this.furnitures.radiator.name,"DragDrop","limits",-(value/2 - this.walls.thickness),(value/2 - this.walls.thickness),limits_Radiator[2],limits_Radiator[3],-(this.floor.width/2 - this.walls.thickness),(this.floor.width/2 - this.walls.thickness));
                 break;      
             case "wallsHeight":
                 this.walls.height = value;
