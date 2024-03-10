@@ -6,6 +6,9 @@ class Custom_GUI extends GUI{
         super();
         this.hide();
         this._splineApp = splineApp;
+        this.windowFixedToFloor = 15;
+        this.windowFixedToCeil = 15;
+        this.windowFixedToSide = 10;
         this.walls = {
             length: 300,
             thickness: 5,
@@ -15,19 +18,18 @@ class Custom_GUI extends GUI{
             state:{
                 rightWall: true,
                 backWall: true,
-                leftWall: true,
-                frontWall: true,
+                leftWall: false,
+                frontWall: false,
             }
         }
         this.floor = {
             length : 300,
             width: 400,
-            min: 200,
-            max: 1000
+            minLength: 200,
+            maxLength: 1000,
+            minWidth: 200,
+            maxWidth: 1000,
         }
-        this.windowFixedToFloor = 15;
-        this.windowFixedToCeil = 15;
-        this.windowFixedToSide = 10;
         this.windows = {
             rightWindow: "WWR",
             backWindow: "WWB",
@@ -41,7 +43,11 @@ class Custom_GUI extends GUI{
             },
             width:100,
             hieght: 150,
-            extrude: 2
+            extrude: 2,
+            min:50,
+            maxWidth: 270,
+            maxHeight: 269
+
         }
         this.cornice = {
             thickness: 1,
@@ -88,10 +94,21 @@ class Custom_GUI extends GUI{
             let floorFolder = this.addFolder("Floor");
             _.each(floor, m => {
                 let name = _.keys(m)[0];
-                floorFolder.add( m, name, this.floor.min, this.floor.max,10).onChange( value => {
-                    app.setVariable(name,value);
-                    this.#updateWalls(name,value);
-                })
+                if(name.includes("floorWidth")){
+                    floorFolder.add( m, name, this.floor.minWidth, this.floor.maxWidth,10 ).onChange( value => {
+                        app.setVariable(name,value);
+                        this.#updateWalls(name,value);
+                    });
+                }else if (name.includes("floorLength")){
+                    floorFolder.add( m, name, this.floor.minLength, this.floor.maxLength,10 ).onChange( value => {
+                        app.setVariable(name,value);
+                        this.#updateWalls(name,value);
+                    }); 
+                }
+                // floorFolder.add( m, name, this.floor.minWdth, this.floor.maxWidth,10).onChange( value => {
+                //     app.setVariable(name,value);
+                //     this.#updateWalls(name,value);
+                // })
             });
         }
 
@@ -107,19 +124,19 @@ class Custom_GUI extends GUI{
                 /*Set default visibility*/
                 switch (m) {
                     case "Wall_Right":
-                        visibility = this.#getObjectByName(m).visible;
+                        visibility = this.walls.state.rightWall;
                         this.#getObjectByName(this.cornice.rightCornice).visible = visibility;
                         break;
                     case "Wall_Left":
-                        visibility = this.#getObjectByName(m).visible;
+                        visibility = this.walls.state.leftWall;
                         this.#getObjectByName(this.cornice.leftCornice).visible = visibility;
                         break;
                     case "Wall_Back":
-                        visibility = this.#getObjectByName(m).visible;
+                        visibility = this.walls.state.backWall;
                         this.#getObjectByName(this.cornice.backCornice).visible = visibility;
                         break;
                     case "Wall_Front":
-                        visibility = this.#getObjectByName(m).visible;
+                        visibility = this.walls.state.frontWall;
                         this.#getObjectByName(this.cornice.frontCornice).visible = visibility;
                         break;               
                     default:
@@ -136,24 +153,28 @@ class Custom_GUI extends GUI{
                         case "Wall_Right":
                             this.walls.state.rightWall = value;
                             this.#findControllers("Window Right").disable(!value);
+                            this.#findControllers("Panel Number WR").disable(!value);
                             if (this.windows.state.rightWindow) this.#getObjectByName("WWR").visible = value;
                             this.#getObjectByName(this.cornice.rightCornice).visible = value;
                             break;
                         case "Wall_Left":
                             this.walls.state.leftWall = value;
                             this.#findControllers("Window Left").disable(!value);
+                            this.#findControllers("Panel Number WL").disable(!value);
                             if (this.windows.state.leftWindow) this.#getObjectByName("WWL").visible = value;
                             this.#getObjectByName(this.cornice.leftCornice).visible = value;
                             break;
                         case "Wall_Back":
                             this.walls.state.leftWall = value;
                             this.#findControllers("Window Back").disable(!value);
+                            this.#findControllers("Panel Number WB").disable(!value);
                             if (this.windows.state.backWindow) this.#getObjectByName("WWB").visible = value;
                             this.#getObjectByName(this.cornice.backCornice).visible = value;
                             break;
                         case "Wall_Front":
                             this.walls.state.leftWall = value;
                             this.#findControllers("Window Front").disable(!value);
+                            this.#findControllers("Panel Number WF").disable(!value);
                             if (this.windows.state.frontWindow) this.#getObjectByName("WWF").visible = value;
                             this.#getObjectByName(this.cornice.frontCornice).visible = value;
                             break;               
@@ -165,7 +186,7 @@ class Custom_GUI extends GUI{
             });
             /*Wall height*/
             let wallsHight = app.getVariable("wallsHeight");
-            wallFolder.add( {wallsHeight: wallsHight} , "wallsHeight",this.walls.min,this.walls.max).onChange( value => {
+            wallFolder.add( {wallsHeight: wallsHight} , "wallsHeight",this.walls.min,this.walls.max,10).onChange( value => {
                 app.setVariable("wallsHeight",value);
                 this.#updateWalls("wallsHeight",value);
             });
@@ -192,8 +213,8 @@ class Custom_GUI extends GUI{
             windowsFolder.add( {"Window Right" : false} , "Window Right").onChange( value => {
                 this.#getObjectByName(this.windows.rightWindow).visible = value;
                 this.windows.state.rightWindow = value;
-            });
-            windowsFolder.add( {"Panel Number" : 1} , "Panel Number", [1,2,3,4]).onChange( value => {
+            }).disable(!this.walls.state.rightWall);
+            windowsFolder.add( {"Panel Number WR" : 1} , "Panel Number WR", [1,2,3,4]).onChange( value => {
                 switch (value) {
                     case 1:
                         this.#getObjectByName("WWR_MF").visible = false;
@@ -226,7 +247,7 @@ class Custom_GUI extends GUI{
                         break;
                 }
                 
-            });
+            }).disable(!this.walls.state.rightWall);
             //For Back window
             this.#getObjectByName(this.windows.backWindow).visible = false;
             let WWB_zMin = -((this.floor.width -app.getVariable("windowFrameWidth_WWB"))/2 - (this.walls.thickness + this.windowFixedToSide));
@@ -243,8 +264,8 @@ class Custom_GUI extends GUI{
             windowsFolder.add( {"Window Back" : false} , "Window Back").onChange( value => {
                 this.#getObjectByName(this.windows.backWindow).visible = value;
                 this.windows.state.backWindow = value;
-            });
-            windowsFolder.add( {"Panel Number" : 1} , "Panel Number", [1,2,3,4]).onChange( value => {
+            }).disable(!this.walls.state.backWall);
+            windowsFolder.add( {"Panel Number WB" : 1} , "Panel Number WB", [1,2,3,4]).onChange( value => {
                 switch (value) {
                     case 1:
                         this.#getObjectByName("WWB_MF").visible = false;
@@ -277,7 +298,7 @@ class Custom_GUI extends GUI{
                         break;
                 }
                 
-            });
+            }).disable(!this.walls.state.backWall);
             //For Left window
             this.#getObjectByName(this.windows.leftWindow).visible = false;
             let WWL_xMin = -((this.floor.length -app.getVariable("windowFrameWidth_WWL"))/2 - (this.walls.thickness + this.windowFixedToSide));
@@ -288,10 +309,47 @@ class Custom_GUI extends GUI{
             let WWL_zMax = Infinity;
 
             this.#setDragDropLimits(this.windows.leftWindow,"DragDrop","limits",WWL_xMin , WWL_xMax , WWL_yMin , WWL_yMax , WWL_zMin , WWL_zMax);
+            this.#getObjectByName("WWL_MF").visible = false;
+            this.#getObjectByName("WWL_MLF").visible = false;
+            this.#getObjectByName("WWL_MRF").visible = false;
             windowsFolder.add( {"Window Left" : false} , "Window Left").onChange( value => {
                 this.#getObjectByName(this.windows.leftWindow).visible = value;
                 this.windows.state.leftWindow = value;
-            });
+            }).disable(!this.walls.state.leftWall);
+            windowsFolder.add( {"Panel Number WL" : 1} , "Panel Number WL", [1,2,3,4]).onChange( value => {
+                switch (value) {
+                    case 1:
+                        this.#getObjectByName("WWL_MF").visible = false;
+                        this.#getObjectByName("WWL_MLF").visible = false;
+                        this.#getObjectByName("WWL_MRF").visible = false;
+                        break;
+                    case 2:
+                        this.#getObjectByName("WWL_MF").visible = true;
+                        this.#getObjectByName("WWL_MLF").visible = false;
+                        this.#getObjectByName("WWL_MRF").visible = false;
+                        break;  
+                    case 3:
+                        this.#getObjectByName("WWL_MLF").position.z = (this.windows.width/2 - this.windows.extrude/2)/3;
+                        this.#getObjectByName("WWL_MRF").position.z = -(this.windows.width/2 - this.windows.extrude/2)/3;
+                        this.#getObjectByName("WWL_MF").visible = false;
+                        this.#getObjectByName("WWL_MLF").visible = true;
+                        this.#getObjectByName("WWL_MRF").visible = true;
+                        break; 
+                    case 4:
+                        this.#getObjectByName("WWL_MLF").position.z = (this.windows.width/2 - this.windows.extrude/2)/2;
+                        this.#getObjectByName("WWL_MRF").position.z = -(this.windows.width/2 - this.windows.extrude/2)/2;
+                        this.#getObjectByName("WWL_MF").visible = true;
+                        this.#getObjectByName("WWL_MLF").visible = true;
+                        this.#getObjectByName("WWL_MRF").visible = true;
+                        break;               
+                    default:
+                        this.#getObjectByName("WWL_MF").visible = false;
+                        this.#getObjectByName("WWL_MLF").visible = false;
+                        this.#getObjectByName("WWL_MRF").visible = false;
+                        break;
+                }
+                
+            }).disable(!this.walls.state.leftWall);
             //For Fornt window
             this.#getObjectByName(this.windows.frontWindow).visible = false;
             let WWF_zMin = -((this.floor.width -app.getVariable("windowFrameWidth_WWF"))/2 - (this.walls.thickness + this.windowFixedToSide));
@@ -302,17 +360,61 @@ class Custom_GUI extends GUI{
             let WWF_xMax = Infinity;
 
             this.#setDragDropLimits(this.windows.frontWindow,"DragDrop","limits",WWF_xMin , WWF_xMax , WWF_yMin , WWF_yMax , WWF_zMin , WWF_zMax);
+            this.#getObjectByName("WWF_MF").visible = false;
+            this.#getObjectByName("WWF_MLF").visible = false;
+            this.#getObjectByName("WWF_MRF").visible = false;
             windowsFolder.add( {"Window Front" : false} , "Window Front").onChange( value => {
                 this.#getObjectByName(this.windows.frontWindow).visible = value;
                 this.windows.state.frontWindow = value;
-            });
+            }).disable(!this.walls.state.frontWall);
+            windowsFolder.add( {"Panel Number WF" : 1} , "Panel Number WF", [1,2,3,4]).onChange( value => {
+                switch (value) {
+                    case 1:
+                        this.#getObjectByName("WWF_MF").visible = false;
+                        this.#getObjectByName("WWF_MLF").visible = false;
+                        this.#getObjectByName("WWF_MRF").visible = false;
+                        break;
+                    case 2:
+                        this.#getObjectByName("WWF_MF").visible = true;
+                        this.#getObjectByName("WWF_MLF").visible = false;
+                        this.#getObjectByName("WWF_MRF").visible = false;
+                        break;  
+                    case 3:
+                        this.#getObjectByName("WWF_MLF").position.z = (this.windows.width/2 - this.windows.extrude/2)/3;
+                        this.#getObjectByName("WWF_MRF").position.z = -(this.windows.width/2 - this.windows.extrude/2)/3;
+                        this.#getObjectByName("WWF_MF").visible = false;
+                        this.#getObjectByName("WWF_MLF").visible = true;
+                        this.#getObjectByName("WWF_MRF").visible = true;
+                        break; 
+                    case 4:
+                        this.#getObjectByName("WWF_MLF").position.z = (this.windows.width/2 - this.windows.extrude/2)/2;
+                        this.#getObjectByName("WWF_MRF").position.z = -(this.windows.width/2 - this.windows.extrude/2)/2;
+                        this.#getObjectByName("WWF_MF").visible = true;
+                        this.#getObjectByName("WWF_MLF").visible = true;
+                        this.#getObjectByName("WWF_MRF").visible = true;
+                        break;               
+                    default:
+                        this.#getObjectByName("WWF_MF").visible = false;
+                        this.#getObjectByName("WWF_MLF").visible = false;
+                        this.#getObjectByName("WWF_MRF").visible = false;
+                        break;
+                }
+                
+            }).disable(!this.walls.state.frontWall);
             _.each(windows, m => {
                 let parameterName = _.keys(m)[0];
                 let initialValue = _.values(m)[0];
                 // console.log(initialValue)
-                windowsFolder.add( m, parameterName, 80, 200,10 ).onChange( value => {
-                    this.#updateWindows(parameterName,value);
-                });
+                if(parameterName.includes("windowFrameWidth")){
+                    windowsFolder.add( m, parameterName, this.windows.min, this.windows.maxWidth,10 ).onChange( value => {
+                        this.#updateWindows(parameterName,value);
+                    });
+                }else if (parameterName.includes("windowFrameHeight")){
+                    windowsFolder.add( m, parameterName, this.windows.min, this.windows.maxHeight,10 ).onChange( value => {
+                        this.#updateWindows(parameterName,value);
+                    }); 
+                }
+
             });
         }
 
@@ -344,20 +446,6 @@ class Custom_GUI extends GUI{
         // console.log(this.controllersRecursive());
     }
 
-    #findKey(variablesObject,...keywords){
-        let keyList =  _.keys(variablesObject);
-        let filteredKeys = [];
-
-        _.each(keyList, key => {
-            let member = {};
-            if(_.some(keywords, kw => key.includes(kw))){
-                member[key] = variablesObject[key];
-                filteredKeys.push(member);
-            }
-        });
-        return filteredKeys;
-    }
-
     #updateWalls(parameter,value){
 
         let windowThickness = this._splineApp.getVariable("windowExtrude");
@@ -365,16 +453,16 @@ class Custom_GUI extends GUI{
         a group or component object and Spline couldn't handle size automaticaly
         so we change scale eachtime in update function. thus we multiply
         width with  scale each time!*/
-        let windowFrameWidthWWR = this._splineApp.getVariable("windowFrameWidth_WWR") * this.#getObjectByName(this.windows.rightWindow).scale.x;
+        let windowFrameWidthWWR = this._splineApp.getVariable("windowFrameWidth_WWR") * this.#getObjectByName(this.windows.rightWindow).scale.z;
         let windowFrameHeightWWR = this._splineApp.getVariable("windowFrameHeight_WWR") * this.#getObjectByName(this.windows.rightWindow).scale.y;
-        let windowFrameWidthWWL = this._splineApp.getVariable("windowFrameWidth_WWL") * this.#getObjectByName(this.windows.leftWindow).scale.x;
+        let windowFrameWidthWWL = this._splineApp.getVariable("windowFrameWidth_WWL") * this.#getObjectByName(this.windows.leftWindow).scale.z;
         let windowFrameHeightWWL = this._splineApp.getVariable("windowFrameHeight_WWL") * this.#getObjectByName(this.windows.leftWindow).scale.y;
         /*since we use rotate.y= 90 to make window for back and front
         walls, yet we should scale x, since scale function in spline opperate
         over main position! */
-        let windowFrameWidthWWB = this._splineApp.getVariable("windowFrameWidth_WWB") * this.#getObjectByName(this.windows.backWindow).scale.x;
+        let windowFrameWidthWWB = this._splineApp.getVariable("windowFrameWidth_WWB") * this.#getObjectByName(this.windows.backWindow).scale.z;
         let windowFrameHeightWWB = this._splineApp.getVariable("windowFrameHeight_WWB") * this.#getObjectByName(this.windows.backWindow).scale.y;
-        let windowFrameWidthWWF = this._splineApp.getVariable("windowFrameWidth_WWF") * this.#getObjectByName(this.windows.frontWindow).scale.x;
+        let windowFrameWidthWWF = this._splineApp.getVariable("windowFrameWidth_WWF") * this.#getObjectByName(this.windows.frontWindow).scale.z;
         let windowFrameHeightWWF = this._splineApp.getVariable("windowFrameHeight_WWF") * this.#getObjectByName(this.windows.frontWindow).scale.y;
 
         let limits_WWR =  this.getEventData(this.windows.rightWindow,"DragDrop","limits");
@@ -388,6 +476,10 @@ class Custom_GUI extends GUI{
         switch (parameter) {
             case "floorWidth":
                 this.floor.width = value;
+                this.#findControllers("windowFrameWidth_WWB").max(this.floor.width - 2 * this.walls.thickness - 2 * this.windowFixedToSide - 1);
+                this.#findControllers("windowFrameWidth_WWB").updateDisplay();
+                this.#findControllers("windowFrameWidth_WWF").max(this.floor.width - 2 * this.walls.thickness - 2 * this.windowFixedToSide - 1);
+                this.#findControllers("windowFrameWidth_WWF").updateDisplay();
                 //Walls
                 this._splineApp.setVariable("wallLeftPosition_Z",value/2 - this.walls.thickness/2);
                 this._splineApp.setVariable("wallRightPosition_Z",-(value/2 - this.walls.thickness/2));
@@ -430,6 +522,10 @@ class Custom_GUI extends GUI{
                 break;
             case "floorLength":
                 this.floor.length = value;
+                this.#findControllers("windowFrameWidth_WWR").max(this.floor.length - 2 * this.walls.thickness - 2 * this.windowFixedToSide - 1);
+                this.#findControllers("windowFrameWidth_WWR").updateDisplay();
+                this.#findControllers("windowFrameWidth_WWL").max(this.floor.length - 2 * this.walls.thickness - 2 * this.windowFixedToSide - 1);
+                this.#findControllers("windowFrameWidth_WWL").updateDisplay();
                 //Walls
                 this._splineApp.setVariable("wallFrontPosition_X",value/2 - this.walls.thickness/2);
                 this._splineApp.setVariable("wallBackPosition_X",-(value/2 - this.walls.thickness/2));
@@ -470,6 +566,16 @@ class Custom_GUI extends GUI{
                 this.#setDragDropLimits(this.doors.backDoor,"DragDrop","limits",-(value/2 - this.walls.thickness),(value/2 - this.walls.thickness),limits_DWB[2],limits_DWB[3],-(this.floor.width/2 - this.walls.thickness),(this.floor.width/2 - this.walls.thickness));
                 break;      
             case "wallsHeight":
+                this.walls.height = value;
+                this.windows.maxHeight = value - this.windowFixedToCeil - this.windowFixedToFloor - 1;
+                this.#findControllers("windowFrameHeight_WWR").max(this.windows.maxHeight);
+                this.#findControllers("windowFrameHeight_WWR").updateDisplay();
+                this.#findControllers("windowFrameHeight_WWL").max(this.windows.maxHeight);
+                this.#findControllers("windowFrameHeight_WWL").updateDisplay();
+                this.#findControllers("windowFrameHeight_WWB").max(this.windows.maxHeight);
+                this.#findControllers("windowFrameHeight_WWB").updateDisplay();
+                this.#findControllers("windowFrameHeight_WWF").max(this.windows.maxHeight);
+                this.#findControllers("windowFrameHeight_WWF").updateDisplay();
                 //Walls
                 this._splineApp.setVariable("wallsPosition_Y",value / 2);
                 //Windows
@@ -542,6 +648,16 @@ class Custom_GUI extends GUI{
         switch (parameter) {
             /*Right Window*/
             case "windowFrameWidth_WWR":
+                /*these update floor width controller*/
+                this.floor.minWidth = Math.max(
+                    this.#findControllers("windowFrameWidth_WWR").getValue() + 2 * this.windowFixedToSide + 2 * this.walls.thickness + 1,
+                    this.#findControllers("windowFrameWidth_WWL").getValue() + 2 * this.windowFixedToSide + 2 * this.walls.thickness + 1,
+                    // this.windowFixedToFloor + this.windowFixedToCeil + this.windows.hieght + 1,
+                    // this.windowFixedToFloor + this.windowFixedToCeil + value + 1,
+                    210
+                );
+                this.#findControllers("floorLength").min(this.floor.minWidth);
+                this.#findControllers("floorLength").updateDisplay();
                 let WWR_scaleX = (1 + (value - windowFrameWidthWWR)/windowFrameWidthWWR);
                 this.#getObjectByName(this.windows.rightWindow).scale.z = WWR_scaleX;
                 this.#setDragDropLimits(this.windows.rightWindow,"DragDrop","limits",-(this.floor.length/2 - value/2 - this.walls.thickness - this.windowFixedToSide),(this.floor.length/2 - value/2 - this.windowFixedToSide),limits_WWR[2],limits_WWR[3],-Infinity,Infinity);
@@ -557,8 +673,22 @@ class Custom_GUI extends GUI{
                 }
                 break;
             case "windowFrameHeight_WWR":
+                /*these update wall Hieght controller*/
+                this.walls.min = Math.max(
+                    this.#findControllers("windowFrameHeight_WWR").getValue() + this.windowFixedToFloor + this.windowFixedToCeil + 1,
+                    this.#findControllers("windowFrameHeight_WWB").getValue() + this.windowFixedToFloor + this.windowFixedToCeil + 1,
+                    this.#findControllers("windowFrameHeight_WWL").getValue() + this.windowFixedToFloor + this.windowFixedToCeil + 1,
+                    this.#findControllers("windowFrameHeight_WWF").getValue() + this.windowFixedToFloor + this.windowFixedToCeil + 1,
+                    // this.windowFixedToFloor + this.windowFixedToCeil + this.windows.hieght + 1,
+                    // this.windowFixedToFloor + this.windowFixedToCeil + value + 1,
+                    210
+                );
+                this.#findControllers("wallsHeight").min(this.walls.min);
+                this.#findControllers("wallsHeight").updateDisplay();
+                this.windows.hieght = value;
                 let WWR_scaleY = (1 + (value - windowFrameHeightWWR)/windowFrameHeightWWR);
                 this.#getObjectByName(this.windows.rightWindow).scale.y = WWR_scaleY;
+                console.log(this.walls.height)
                 this.#setDragDropLimits(this.windows.rightWindow,"DragDrop","limits",limits_WWR[0],limits_WWR[1],(value/2 + this.windowFixedToFloor),(this.walls.height - value/2 - this.windowFixedToCeil),-Infinity,Infinity);
                 /*this is an additional limitaion for window position
                 in y deirection 'relative' to the Height of wall*/
@@ -572,7 +702,18 @@ class Custom_GUI extends GUI{
                 }
                 break; 
             /*Back Window*/   
-            case "windowFrameWidth_WWB":  
+            case "windowFrameWidth_WWB": 
+                /*these update floor length controller*/
+                this.floor.minLength = Math.max(
+                    this.#findControllers("windowFrameWidth_WWB").getValue() + 2 * this.windowFixedToSide + 2 * this.walls.thickness + 1,
+                    this.#findControllers("windowFrameWidth_WWF").getValue() + 2 * this.windowFixedToSide + 2 * this.walls.thickness + 1,
+                    // this.windowFixedToFloor + this.windowFixedToCeil + this.windows.hieght + 1,
+                    // this.windowFixedToFloor + this.windowFixedToCeil + value + 1,
+                    210
+                );
+                this.#findControllers("floorWidth").min(this.floor.minLength);
+                this.#findControllers("floorWidth").updateDisplay();
+                // this.floor.min = value + 2 * this.windowFixedToSide; 
                 let WWB_scaleX = (1 + (value - windowFrameWidthWWB)/windowFrameWidthWWB);
                 console.log(WWB_scaleX)
                 this.#getObjectByName(this.windows.backWindow).scale.z = WWB_scaleX;
@@ -589,9 +730,22 @@ class Custom_GUI extends GUI{
                 }
                 break;  
             case "windowFrameHeight_WWB":
+                /*these update wall Hieght controller*/
+                this.walls.min = Math.max(
+                    this.#findControllers("windowFrameHeight_WWR").getValue() + this.windowFixedToFloor + this.windowFixedToCeil + 1,
+                    this.#findControllers("windowFrameHeight_WWB").getValue() + this.windowFixedToFloor + this.windowFixedToCeil + 1,
+                    this.#findControllers("windowFrameHeight_WWL").getValue() + this.windowFixedToFloor + this.windowFixedToCeil + 1,
+                    this.#findControllers("windowFrameHeight_WWF").getValue() + this.windowFixedToFloor + this.windowFixedToCeil + 1,
+                    // this.windowFixedToFloor + this.windowFixedToCeil + this.windows.hieght + 1,
+                    // this.windowFixedToFloor + this.windowFixedToCeil + value + 1,
+                    210
+                );
+                this.#findControllers("wallsHeight").min(this.walls.min);
+                this.#findControllers("wallsHeight").updateDisplay();
+                this.windows.hieght = value;
                 let WWB_scaleY = (1 + (value - windowFrameHeightWWB)/windowFrameHeightWWB);
                 this.#getObjectByName(this.windows.backWindow).scale.y = WWB_scaleY;
-                this.#setDragDropLimits(this.windows.backWindow,"DragDrop","limits",-Infinity,Infinity,(value/2 + this.windowFixedToFloor),(this.walls.height - value/2 - this.windowFixedToCeil),limits_WWB[4],limits_WWB[5]);
+                this.#setDragDropLimits(this.windows.backWindow,"DragDrop","limits",-Infinity,Infinity,(value/2 + this.windowFixedToFloor),(this.walls.min - value/2 - this.windowFixedToCeil),limits_WWB[4],limits_WWB[5]);
                 /*this is an additional limitaion for window position
                 in y deirection 'relative' to the Height of wall*/
                 let WWB_releativeY_Pos = this.#getObjectByName(this.windows.backWindow).position.y > (this.walls.height - value/2 - this.windowFixedToCeil);
@@ -605,8 +759,18 @@ class Custom_GUI extends GUI{
                 break;
             /*Left Window*/  
             case "windowFrameWidth_WWL":
+                /*these update floor width controller*/
+                this.floor.minWidth = Math.max(
+                    this.#findControllers("windowFrameWidth_WWR").getValue() + 2 * this.windowFixedToSide + 2 * this.walls.thickness + 1,
+                    this.#findControllers("windowFrameWidth_WWL").getValue() + 2 * this.windowFixedToSide + 2 * this.walls.thickness + 1,
+                    // this.windowFixedToFloor + this.windowFixedToCeil + this.windows.hieght + 1,
+                    // this.windowFixedToFloor + this.windowFixedToCeil + value + 1,
+                    210
+                );
+                this.#findControllers("floorLength").min(this.floor.minWidth);
+                this.#findControllers("floorLength").updateDisplay();
                 let WWL_scaleX = (1 + (value - windowFrameWidthWWL)/windowFrameWidthWWL);
-                this.#getObjectByName(this.windows.leftWindow).scale.x = WWL_scaleX;
+                this.#getObjectByName(this.windows.leftWindow).scale.z = WWL_scaleX;
                 this.#setDragDropLimits(this.windows.leftWindow,"DragDrop","limits",-(this.floor.length/2 - value/2 - this.walls.thickness - this.windowFixedToSide),(this.floor.length/2 - value/2 - this.windowFixedToSide),limits_WWL[2],limits_WWL[3],-Infinity,Infinity);
                 /*this is an additional limitaion for window position
                 in y deirection 'relative' to the Length wall*/
@@ -620,9 +784,22 @@ class Custom_GUI extends GUI{
                 }
                 break;
             case "windowFrameHeight_WWL":
+                /*these update wall Hieght controller*/
+                this.walls.min = Math.max(
+                    this.#findControllers("windowFrameHeight_WWR").getValue() + this.windowFixedToFloor + this.windowFixedToCeil + 1,
+                    this.#findControllers("windowFrameHeight_WWB").getValue() + this.windowFixedToFloor + this.windowFixedToCeil + 1,
+                    this.#findControllers("windowFrameHeight_WWL").getValue() + this.windowFixedToFloor + this.windowFixedToCeil + 1,
+                    this.#findControllers("windowFrameHeight_WWF").getValue() + this.windowFixedToFloor + this.windowFixedToCeil + 1,
+                    // this.windowFixedToFloor + this.windowFixedToCeil + this.windows.hieght + 1,
+                    // this.windowFixedToFloor + this.windowFixedToCeil + value + 1,
+                    210
+                );
+                this.#findControllers("wallsHeight").min(this.walls.min);
+                this.#findControllers("wallsHeight").updateDisplay();
+                this.windows.hieght = value;
                 let WWL_scaleY = (1 + (value - windowFrameHeightWWL)/windowFrameHeightWWL);
                 this.#getObjectByName(this.windows.leftWindow).scale.y = WWL_scaleY;
-                this.#setDragDropLimits(this.windows.leftWindow,"DragDrop","limits",limits_WWL[0],limits_WWL[1],(value/2 + this.windowFixedToFloor),(this.walls.height - value/2 - this.windowFixedToCeil),-Infinity,Infinity);
+                this.#setDragDropLimits(this.windows.leftWindow,"DragDrop","limits",limits_WWL[0],limits_WWL[1],(value/2 + this.windowFixedToFloor),(this.walls.min - value/2 - this.windowFixedToCeil),-Infinity,Infinity);
                 /*this is an additional limitaion for window position
                 in y deirection 'relative' to the Height of wall*/
                 let WWL_releativeY_Pos = this.#getObjectByName(this.windows.leftWindow).position.y > (this.walls.height - value/2 - this.windowFixedToCeil);
@@ -636,8 +813,18 @@ class Custom_GUI extends GUI{
                 break; 
             /*Front Window*/   
             case "windowFrameWidth_WWF":  
+                /*these update floor length controller*/
+                this.floor.minLength = Math.max(
+                    this.#findControllers("windowFrameWidth_WWB").getValue() + 2 * this.windowFixedToSide + 2 * this.walls.thickness + 1,
+                    this.#findControllers("windowFrameWidth_WWF").getValue() + 2 * this.windowFixedToSide + 2 * this.walls.thickness + 1,
+                    // this.windowFixedToFloor + this.windowFixedToCeil + this.windows.hieght + 1,
+                    // this.windowFixedToFloor + this.windowFixedToCeil + value + 1,
+                    210
+                );
+                this.#findControllers("floorWidth").min(this.floor.minLength);
+                this.#findControllers("floorWidth").updateDisplay();
                 let WWF_scaleX = (1 + (value - windowFrameWidthWWF)/windowFrameWidthWWF);
-                this.#getObjectByName(this.windows.frontWindow).scale.x = WWF_scaleX;
+                this.#getObjectByName(this.windows.frontWindow).scale.z = WWF_scaleX;
                 this.#setDragDropLimits(this.windows.frontWindow,"DragDrop","limits",-Infinity,Infinity,limits_WWF[2],limits_WWF[3],-(this.floor.width/2 - value/2 - this.walls.thickness - this.windowFixedToSide),(this.floor.width/2 - value/2 - this.windowFixedToSide));
                 /*this is an additional limitaion for window position
                 in y deirection 'relative' to the Length wall*/
@@ -651,9 +838,22 @@ class Custom_GUI extends GUI{
                 }
                 break;  
             case "windowFrameHeight_WWF":
+                /*these update wall Hieght controller*/
+                this.walls.min = Math.max(
+                    this.#findControllers("windowFrameHeight_WWR").getValue() + this.windowFixedToFloor + this.windowFixedToCeil + 1,
+                    this.#findControllers("windowFrameHeight_WWB").getValue() + this.windowFixedToFloor + this.windowFixedToCeil + 1,
+                    this.#findControllers("windowFrameHeight_WWL").getValue() + this.windowFixedToFloor + this.windowFixedToCeil + 1,
+                    this.#findControllers("windowFrameHeight_WWF").getValue() + this.windowFixedToFloor + this.windowFixedToCeil + 1,
+                    // this.windowFixedToFloor + this.windowFixedToCeil + this.windows.hieght + 1,
+                    // this.windowFixedToFloor + this.windowFixedToCeil + value + 1,
+                    210
+                );
+                this.#findControllers("wallsHeight").min(this.walls.min);
+                this.#findControllers("wallsHeight").updateDisplay();
+                this.windows.hieght = value;
                 let WWF_scaleY = (1 + (value - windowFrameHeightWWF)/windowFrameHeightWWF);
                 this.#getObjectByName(this.windows.frontWindow).scale.y = WWF_scaleY;
-                this.#setDragDropLimits(this.windows.frontWindow,"DragDrop","limits",-Infinity,Infinity,(value/2 + this.windowFixedToFloor),(this.walls.height - value/2 - this.windowFixedToCeil),limits_WWF[4],limits_WWF[5]);
+                this.#setDragDropLimits(this.windows.frontWindow,"DragDrop","limits",-Infinity,Infinity,(value/2 + this.windowFixedToFloor),(this.walls.min - value/2 - this.windowFixedToCeil),limits_WWF[4],limits_WWF[5]);
                 /*this is an additional limitaion for window position
                 in y deirection 'relative' to the Height of wall*/
                 let WWF_releativeY_Pos = this.#getObjectByName(this.windows.frontWindow).position.y > (this.walls.height - value/2 - this.windowFixedToCeil);
@@ -673,6 +873,19 @@ class Custom_GUI extends GUI{
 
     }
 
+    #findKey(variablesObject,...keywords){
+        let keyList =  _.keys(variablesObject);
+        let filteredKeys = [];
+
+        _.each(keyList, key => {
+            let member = {};
+            if(_.some(keywords, kw => key.includes(kw))){
+                member[key] = variablesObject[key];
+                filteredKeys.push(member);
+            }
+        });
+        return filteredKeys;
+    }
 
     getEventData(objectName,eventName,eventParameter){
         let value = false;
