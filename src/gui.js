@@ -75,8 +75,6 @@ class Custom_GUI extends GUI{
             frontCornice: "CWF",
         }
         this.furnitures = {
-            cube: "Cube",
-            toilet: "Toilet",
             radiator: {
                 name: "Radiator",
                 thickness: 5.6,
@@ -115,6 +113,24 @@ class Custom_GUI extends GUI{
                     },
                     headsetHolder:{
                         type1: 1
+                    },
+                    mousepad:{
+                        type1: 1
+                    },
+                    mug:{
+                        type1: 1
+                    },
+                    keyoboard:{
+                        type1: 1
+                    },
+                    mouse:{
+                        type1: 1
+                    },
+                    headset:{
+                        type1: 1
+                    },
+                    monitor:{
+                        type1: 1
                     }
                 },
                 state:{
@@ -128,15 +144,31 @@ class Custom_GUI extends GUI{
                     cupHolder4: false,
                     cableManagement1: false,
                     headsetHolder1: false,
+                    mousepad1:false,
+                    mug1:false,
+                    keyboard1:false,
+                    mouse1:false,
+                    headset1:false,
+                    monitor1:false,
                     visibility: true
                 },
                 color:{
                     white: 1,
                     black: 2
                 },
+            },
+            sofa: {
+                name: "Sofa",
+                state:{
+                    visibility: false,
+                }  
+            },
+            chair: {
+                name: "Chair",
+                state:{
+                    visibility: false,
+                }  
             }
-
-
         }
         this.doors = {
             backDoor : "DWB",
@@ -600,6 +632,16 @@ class Custom_GUI extends GUI{
         furnituresFolder.add( {"Radiator" : this.furnitures.radiator.state.visibility} , "Radiator").onChange( value => {
             this.#getObjectByName(this.furnitures.radiator.name).visible = value;
         });
+        //For Chair
+        this.#getObjectByName(this.furnitures.chair.name).visible = this.furnitures.chair.state.visibility;
+        furnituresFolder.add( {"Chair" : this.furnitures.chair.state.visibility} , "Chair").onChange( value => {
+            this.#getObjectByName(this.furnitures.chair.name).visible = value;
+        });
+        //For Sofa
+        this.#getObjectByName(this.furnitures.sofa.name).visible = this.furnitures.sofa.state.visibility;
+        furnituresFolder.add( {"Sofa" : this.furnitures.sofa.state.visibility} , "Sofa").onChange( value => {
+            this.#getObjectByName(this.furnitures.sofa.name).visible = value;
+        });
         //For Table
         let tableData = {
             "Table" : this.furnitures.table.state.visibility,
@@ -611,7 +653,14 @@ class Custom_GUI extends GUI{
             "Table Color": 2,
             "Cup Holder": 0,
             "Cable Tray": this.furnitures.table.state.cableManagement1,
-            "Headset Holder": this.furnitures.table.state.headsetHolder1
+            "Headset Holder": this.furnitures.table.state.headsetHolder1,
+
+            "Headset": this.furnitures.table.state.headset1,
+            "Mouse": this.furnitures.table.state.mouse1,
+            "Mouse Pad": this.furnitures.table.state.mousepad1,
+            "Mug": this.furnitures.table.state.mug1,
+            "Keyboard": this.furnitures.table.state.keyboard1,
+            "Monitor": this.furnitures.table.state.monitor1
         }
         //Initializing
         this.#getObjectByName(this.furnitures.table.name).visible = this.furnitures.table.state.visibility;
@@ -629,6 +678,18 @@ class Custom_GUI extends GUI{
         this.#getObjectByName("Cable_Tray_LP").visible = this.furnitures.table.state.cableManagement1;
         //=> headset holder
         this.#getObjectByName("Headset_Holder").visible = this.furnitures.table.state.headsetHolder1;
+        //=> headset 
+        this.#getObjectByName("Headset").visible = this.furnitures.table.state.headset1;
+        //=> mouse pad
+        this.#getObjectByName("MusePad1").visible = this.furnitures.table.state.mousepad1;
+        //=> mug
+        this.#getObjectByName("Mug").visible = this.furnitures.table.state.mug1;
+        //=> keyboard
+        this.#getObjectByName("Keyboard").visible = this.furnitures.table.state.keyboard1;
+        //=> mouse
+        this.#getObjectByName("Mouse").visible = this.furnitures.table.state.mouse1;
+        //=> monitor
+        this.#getObjectByName("Monitor_UltraW").visible = this.furnitures.table.state.monitor1;
 
         let TB_zMin = -((this.floor.width - this.furnitures.table.width)/2 - this.walls.thickness);
         let TB_zMax = ((this.floor.width - this.furnitures.table.width)/2 - this.walls.thickness);
@@ -803,6 +864,24 @@ class Custom_GUI extends GUI{
         });
         furnituresFolder.add( tableData , "Headset Holder").onChange( value => {
             this.#getObjectByName("Headset_Holder").visible = value;
+        });
+        furnituresFolder.add( tableData , "Headset").onChange( value => {
+            this.#getObjectByName("Headset").visible = value;
+        });
+        furnituresFolder.add( tableData , "Mouse").onChange( value => {
+            this.#getObjectByName("Mouse").visible = value;
+        });
+        furnituresFolder.add( tableData , "Mouse Pad").onChange( value => {
+            this.#getObjectByName("MusePad1").visible = value;
+        });
+        furnituresFolder.add( tableData , "Mug").onChange( value => {
+            this.#getObjectByName("Mug").visible = value;
+        });
+        furnituresFolder.add( tableData , "Keyboard").onChange( value => {
+            this.#getObjectByName("Keyboard").visible = value;
+        });
+        furnituresFolder.add( tableData , "Monitor").onChange( value => {
+            this.#getObjectByName("Monitor_UltraW").visible = value;
         });
         // console.log(app.findObjectByName("Window"))
         
