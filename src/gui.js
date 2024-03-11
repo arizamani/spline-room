@@ -55,7 +55,7 @@ class Custom_GUI extends GUI{
             state:{
                 rightWindow: false,
                 backWindow: false,
-                leftWindow: false,
+                leftWindow: true,
                 frontWindow: false,
             },
             width:100,
@@ -81,7 +81,11 @@ class Custom_GUI extends GUI{
                 name: "Radiator",
                 thickness: 5.6,
                 height: 62.9,
-                width: 154
+                width: 154,
+                state:{
+                    visibility: true,
+                }
+                
             },
             table:{
                 name: "Table Black",
@@ -123,12 +127,13 @@ class Custom_GUI extends GUI{
                     cupHolder3: false,
                     cupHolder4: false,
                     cableManagement1: false,
-                    headsetHolder1: false
+                    headsetHolder1: false,
+                    visibility: true
                 },
                 color:{
                     white: 1,
                     black: 2
-                }
+                },
             }
 
 
@@ -149,9 +154,10 @@ class Custom_GUI extends GUI{
                         x: 38,
                         z: 35,
                         rotationY: 1.57
-                    }
+                    },
+                    visibility: true
                 }
-            }
+            },
         }
 
         this.controllers = [];
@@ -334,7 +340,7 @@ class Custom_GUI extends GUI{
             // console.log(this.getEventData(this.windows.backWindow,"DragDrop","limits"));
             let windowsFolder = this.addFolder("Windows");
             //For Right window
-            this.#getObjectByName(this.windows.rightWindow).visible = false;
+            this.#getObjectByName(this.windows.rightWindow).visible = this.windows.state.rightWindow;
             let WWR_xMin = -((this.floor.length -app.getVariable("windowFrameWidth_WWR"))/2 - (this.walls.thickness + this.windowFixedToSide));
             let WWR_xMax = ((this.floor.length -app.getVariable("windowFrameWidth_WWR"))/2 - (this.walls.thickness + this.windowFixedToSide));
             let WWR_yMin = app.getVariable("windowFrameHeight_WWR")/2 + this.windowFixedToFloor;
@@ -346,7 +352,7 @@ class Custom_GUI extends GUI{
             this.#getObjectByName("WWR_MF").visible = false;
             this.#getObjectByName("WWR_MLF").visible = false;
             this.#getObjectByName("WWR_MRF").visible = false;
-            windowsFolder.add( {"Window Right" : false} , "Window Right").onChange( value => {
+            windowsFolder.add( {"Window Right" : this.windows.state.rightWindow} , "Window Right").onChange( value => {
                 this.#getObjectByName(this.windows.rightWindow).visible = value;
                 this.windows.state.rightWindow = value;
             }).disable(!this.walls.state.rightWall);
@@ -385,7 +391,7 @@ class Custom_GUI extends GUI{
                 
             }).disable(!this.walls.state.rightWall);
             //For Back window
-            this.#getObjectByName(this.windows.backWindow).visible = false;
+            this.#getObjectByName(this.windows.backWindow).visible = this.windows.state.backWindow;
             let WWB_zMin = -((this.floor.width -app.getVariable("windowFrameWidth_WWB"))/2 - (this.walls.thickness + this.windowFixedToSide));
             let WWB_zMax = ((this.floor.width -app.getVariable("windowFrameWidth_WWB"))/2 - (this.walls.thickness + this.windowFixedToSide));
             let WWB_yMin = app.getVariable("windowFrameHeight_WWB")/2 + this.windowFixedToFloor;
@@ -397,7 +403,7 @@ class Custom_GUI extends GUI{
             this.#getObjectByName("WWB_MF").visible = false;
             this.#getObjectByName("WWB_MLF").visible = false;
             this.#getObjectByName("WWB_MRF").visible = false;
-            windowsFolder.add( {"Window Back" : false} , "Window Back").onChange( value => {
+            windowsFolder.add( {"Window Back" : this.windows.state.backWindow} , "Window Back").onChange( value => {
                 this.#getObjectByName(this.windows.backWindow).visible = value;
                 this.windows.state.backWindow = value;
             }).disable(!this.walls.state.backWall);
@@ -436,7 +442,7 @@ class Custom_GUI extends GUI{
                 
             }).disable(!this.walls.state.backWall);
             //For Left window
-            this.#getObjectByName(this.windows.leftWindow).visible = false;
+            this.#getObjectByName(this.windows.leftWindow).visible = this.windows.state.leftWindow;
             let WWL_xMin = -((this.floor.length -app.getVariable("windowFrameWidth_WWL"))/2 - (this.walls.thickness + this.windowFixedToSide));
             let WWL_xMax = ((this.floor.length -app.getVariable("windowFrameWidth_WWL"))/2 - (this.walls.thickness + this.windowFixedToSide));
             let WWL_yMin = app.getVariable("windowFrameHeight_WWL")/2 + this.windowFixedToFloor;
@@ -448,7 +454,7 @@ class Custom_GUI extends GUI{
             this.#getObjectByName("WWL_MF").visible = false;
             this.#getObjectByName("WWL_MLF").visible = false;
             this.#getObjectByName("WWL_MRF").visible = false;
-            windowsFolder.add( {"Window Left" : false} , "Window Left").onChange( value => {
+            windowsFolder.add( {"Window Left" : this.windows.state.leftWindow} , "Window Left").onChange( value => {
                 this.#getObjectByName(this.windows.leftWindow).visible = value;
                 this.windows.state.leftWindow = value;
             }).disable(!this.walls.state.leftWall);
@@ -487,7 +493,7 @@ class Custom_GUI extends GUI{
                 
             }).disable(!this.walls.state.leftWall);
             //For Fornt window
-            this.#getObjectByName(this.windows.frontWindow).visible = false;
+            this.#getObjectByName(this.windows.frontWindow).visible = this.windows.state.frontWindow;
             let WWF_zMin = -((this.floor.width -app.getVariable("windowFrameWidth_WWF"))/2 - (this.walls.thickness + this.windowFixedToSide));
             let WWF_zMax = ((this.floor.width -app.getVariable("windowFrameWidth_WWF"))/2 - (this.walls.thickness + this.windowFixedToSide));
             let WWF_yMin = app.getVariable("windowFrameHeight_WWF")/2 + this.windowFixedToFloor;
@@ -499,7 +505,7 @@ class Custom_GUI extends GUI{
             this.#getObjectByName("WWF_MF").visible = false;
             this.#getObjectByName("WWF_MLF").visible = false;
             this.#getObjectByName("WWF_MRF").visible = false;
-            windowsFolder.add( {"Window Front" : false} , "Window Front").onChange( value => {
+            windowsFolder.add( {"Window Front" : this.windows.state.frontWindow} , "Window Front").onChange( value => {
                 this.#getObjectByName(this.windows.frontWindow).visible = value;
                 this.windows.state.frontWindow = value;
             }).disable(!this.walls.state.frontWall);
@@ -559,8 +565,8 @@ class Custom_GUI extends GUI{
             this.#setDragDropLimits(this.doors.backDoor,"DragDrop","limits",-(this.floor.length/2 - this.walls.thickness - this.doors.thickness),(this.floor.length/2 - this.walls.thickness - this.doors.thickness),(this.doors.height/2),(this.doors.height/2 + 0.1),-(this.floor.width/2 - this.walls.thickness),(this.floor.width/2 - this.walls.thickness));
             let doorsFolder = this.addFolder("Doors");
             //For Back Door
-            this.#getObjectByName(this.doors.backDoor).visible = false;
-            doorsFolder.add( {"Door Back" : false} , "Door Back").onChange( value => {
+            this.#getObjectByName(this.doors.backDoor).visible = this.doors.state.backDoor.visibility;
+            doorsFolder.add( {"Door Back" : this.doors.state.backDoor.visibility} , "Door Back").onChange( value => {
                 this.#getObjectByName(this.doors.backDoor).visible = value;
             });
             this.#getObjectByName("Doorlines").visible = false;
@@ -590,13 +596,13 @@ class Custom_GUI extends GUI{
         this.#setDragDropLimits(this.furnitures.radiator.name,"DragDrop","limits",-(this.floor.length/2 - this.walls.thickness - this.furnitures.radiator.thickness),(this.floor.length/2 - this.walls.thickness - this.furnitures.radiator.thickness),(this.furnitures.radiator.height/2),(this.furnitures.radiator.height/2 + 0.1),-(this.floor.width/2 - this.walls.thickness),(this.floor.width/2 - this.walls.thickness));
         let furnituresFolder = this.addFolder("Furnitures");
         //For Radiator
-        this.#getObjectByName(this.furnitures.radiator.name).visible = false;
-        furnituresFolder.add( {"Radiator" : false} , "Radiator").onChange( value => {
+        this.#getObjectByName(this.furnitures.radiator.name).visible = this.furnitures.radiator.state.visibility;
+        furnituresFolder.add( {"Radiator" : this.furnitures.radiator.state.visibility} , "Radiator").onChange( value => {
             this.#getObjectByName(this.furnitures.radiator.name).visible = value;
         });
         //For Table
         let tableData = {
-            "Table" : false,
+            "Table" : this.furnitures.table.state.visibility,
             "Table Size" : 2,
             "Table Rotation" : 0,
             "Raise up table" : () => app.emitEvent('mouseDown', 'btn_up'),
@@ -604,11 +610,11 @@ class Custom_GUI extends GUI{
             "Table Model": 1,
             "Table Color": 2,
             "Cup Holder": 0,
-            "Headset Holder": false,
-            "Cable Tray": false
+            "Cable Tray": this.furnitures.table.state.cableManagement1,
+            "Headset Holder": this.furnitures.table.state.headsetHolder1
         }
         //Initializing
-        this.#getObjectByName(this.furnitures.table.name).visible = false;
+        this.#getObjectByName(this.furnitures.table.name).visible = this.furnitures.table.state.visibility;
         //=> table top
         this.#getObjectByName("Outline Carbon").visible = this.furnitures.table.state.outlineCarbon;
         this.#getObjectByName("Outline").visible = this.furnitures.table.state.outline;
@@ -620,9 +626,9 @@ class Custom_GUI extends GUI{
         this.#getObjectByName("Cupholder3").visible = this.furnitures.table.state.cupHolder3;
         this.#getObjectByName("Cupholder4").visible = this.furnitures.table.state.cupHolder4;
         //=> cable try
-        this.#getObjectByName("Cable_Tray_LP").visible = false;
+        this.#getObjectByName("Cable_Tray_LP").visible = this.furnitures.table.state.cableManagement1;
         //=> headset holder
-        this.#getObjectByName("Headset_Holder").visible = false;
+        this.#getObjectByName("Headset_Holder").visible = this.furnitures.table.state.headsetHolder1;
 
         let TB_zMin = -((this.floor.width - this.furnitures.table.width)/2 - this.walls.thickness);
         let TB_zMax = ((this.floor.width - this.furnitures.table.width)/2 - this.walls.thickness);
