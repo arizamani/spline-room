@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./src/styles.css" />
+
   </head>
   <body>
     <!-- <canvas id="canvas3d"></canvas> -->
@@ -16,11 +17,12 @@
         <p id="change-text-container-notification" class="notification"></p>
         <div id="change-text-container-notification-bar" class="waiting-animation-bar hide"></div>
       </div>
-      <div class="row">
+      <!-- <div class="row">
         <button id="log">log</button>
-      </div>
+      </div> -->
     </div>
     <div id="gui-container"></div>
+    <div id="pre-loader"></div>
 
     <!-- Import maps polyfill -->
     <!-- Remove this when import maps will be widely supported -->
@@ -50,7 +52,7 @@
         let changeTextInput = document.getElementById("change-text-input");
         let changeTextNotification = document.getElementById("change-text-container-notification");
         let changeTextNotificationBar = document.getElementById("change-text-container-notification-bar");
-        let logCTA = document.getElementById("log");
+        // let logCTA = document.getElementById("log");
 
         changeTextCTA.addEventListener("click",loadSplineModels);
 
@@ -98,9 +100,13 @@
                 // let objects = app.getAllObjects();
                 gui = new Custom_GUI(app);
                 gui.init(app);
-                logCTA.addEventListener("click",function(){
-                  console.log(app);
-                });
+                setTimeout(function(){
+                  document.getElementById("pre-loader").style.display ="none";
+                }, 1500);
+                
+                // logCTA.addEventListener("click",function(){
+                //   console.log(app);
+                // });
             }).catch(e => {
               waitingPresentaionEnd(changeTextNotificationBar,waiting);
               toggleTruthy(changeTextNotification,"false-condition","true-condition","waiting-condition");
@@ -144,6 +150,7 @@
           animation.remove(target);
           animation.restart();
         }
+
 
 
 

@@ -83,3 +83,11 @@ canvas {
   color: chartreuse;
 }
 
+#pre-loader{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(#138ba6, #ab8ed4);
+}
