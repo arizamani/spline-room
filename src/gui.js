@@ -17,10 +17,17 @@ class Custom_GUI extends GUI{
             min: 230,
             max: 500,
             state:{
-                rightWall: true,
+                rightWall: false,
                 backWall: true,
-                leftWall: false,
+                leftWall: true,
                 frontWall: false,
+            },
+            color:{
+                cl1: 1,
+                cl2: 2,
+                cl3: 3,
+                cl4: 4,
+                cl5: 5
             }
         }
         this.floor = {
@@ -30,6 +37,15 @@ class Custom_GUI extends GUI{
             maxLength: 1000,
             minWidth: 200,
             maxWidth: 1000,
+            color:{
+                cl1: 1,
+                cl2: 2,
+                cl3: 3,
+                cl4: 4,
+                cl5: 5,
+                cl6: 6,
+                cl7: 7
+            }
         }
         this.windows = {
             rightWindow: "WWR",
@@ -66,7 +82,19 @@ class Custom_GUI extends GUI{
                 thickness: 5.6,
                 height: 62.9,
                 width: 154
+            },
+            table:{
+                name: "Table Black",
+                width: 90, //x
+                length: 160, //z
+                size:{
+                    small: 1,
+                    medium: 2,
+                    large: 3
+                }
             }
+
+
         }
         this.doors = {
             backDoor : "DWB",
@@ -88,21 +116,27 @@ class Custom_GUI extends GUI{
                 }
             }
         }
+
         this.controllers = [];
     }
 
     init(app){
-
+        app.addEventListener('DragDrop', (e) => {
+				console.log('I have been clicked!');
+		});
         let variables = app.getVariables();
-        // let objects = app.getAllObjects();
+        let objects = app.getAllObjects();
         let filteredWalls = {};
-        // console.log(objects);
+        console.log(this.#filterObjectsListByName(objects,"Btn","btn"));
+        let uiControllers = this.#filterObjectsListByName(objects,"Btn","btn");
+        _.each(uiControllers, m => this.#getObjectByName(m).visible = false);
         
         /*v is the name of model in spline platform*/
         let walls = this.#findKey(variables,"wall");
         let floor = this.#findKey(variables,"floor");
         let windows = this.#findKey(variables,"windowFrame");
         let doors = this.#findKey(variables,"door");
+
         // let doorlines = this.#findKey(objects,"Doorlines");
         // console.log(windows);
 
@@ -122,10 +156,35 @@ class Custom_GUI extends GUI{
                         this.#updateWalls(name,value);
                     }); 
                 }
-                // floorFolder.add( m, name, this.floor.minWdth, this.floor.maxWidth,10).onChange( value => {
-                //     app.setVariable(name,value);
-                //     this.#updateWalls(name,value);
-                // })
+            });
+            //Floor Color
+            floorFolder.add( {"Color": 1} , "Color",this.floor.color).onChange( value => {
+                switch (value) {
+                    case 1:
+                        app.emitEvent('mouseDown', 'Btn_FBaseCream');
+                        break;
+                    case 2:
+                        app.emitEvent('mouseDown', 'Btn_FWood1');
+                        break;
+                    case 3:
+                        app.emitEvent('mouseDown', 'Btn_FWood2');
+                        break;
+                    case 4:
+                        app.emitEvent('mouseDown', 'Btn_FWood3');
+                        break;
+                    case 5:
+                        app.emitEvent('mouseDown', 'Btn_FTile1');
+                        break; 
+                    case 6:
+                        app.emitEvent('mouseDown', 'Btn_FGray1');
+                        break; 
+                    case 7:
+                        app.emitEvent('mouseDown', 'Btn_FGray2');
+                        break;               
+                    default:
+                        app.emitEvent('mouseDown', 'Btn_FBaseCream');
+                        break;
+                }
             });
         }
 
@@ -201,11 +260,34 @@ class Custom_GUI extends GUI{
                     }
                 });
             });
-            /*Wall height*/
+            //Wall height
             let wallsHight = app.getVariable("wallsHeight");
             wallFolder.add( {wallsHeight: wallsHight} , "wallsHeight",this.walls.min,this.walls.max,10).onChange( value => {
                 app.setVariable("wallsHeight",value);
                 this.#updateWalls("wallsHeight",value);
+            });
+            //Wall Color
+            wallFolder.add( {"Color": 1} , "Color",this.walls.color).onChange( value => {
+                switch (value) {
+                    case 1:
+                        app.emitEvent('mouseDown', 'Btn_WBaseWhite1');
+                        break;
+                    case 2:
+                        app.emitEvent('mouseDown', 'Btn_WCream1');
+                        break;
+                    case 3:
+                        app.emitEvent('mouseDown', 'Btn_WGray2');
+                        break;
+                    case 4:
+                        app.emitEvent('mouseDown', 'Btn_WGray1');
+                        break;
+                    case 5:
+                        app.emitEvent('mouseDown', 'Btn_WBlack1');
+                        break;               
+                    default:
+                        app.emitEvent('mouseDown', 'Btn_WBaseWhite1');
+                        break;
+                }
             });
         }
 
@@ -470,11 +552,52 @@ class Custom_GUI extends GUI{
         /*Create datas => Furnitures*/
         this.#setDragDropLimits(this.furnitures.radiator.name,"DragDrop","limits",-(this.floor.length/2 - this.walls.thickness - this.furnitures.radiator.thickness),(this.floor.length/2 - this.walls.thickness - this.furnitures.radiator.thickness),(this.furnitures.radiator.height/2),(this.furnitures.radiator.height/2 + 0.1),-(this.floor.width/2 - this.walls.thickness),(this.floor.width/2 - this.walls.thickness));
         let furnituresFolder = this.addFolder("Furnitures");
-        //For Back Door
+        //For Radiator
         this.#getObjectByName(this.furnitures.radiator.name).visible = false;
         furnituresFolder.add( {"Radiator" : false} , "Radiator").onChange( value => {
             this.#getObjectByName(this.furnitures.radiator.name).visible = value;
         });
+        //For Table
+        let tableData = {
+            "Table" : false,
+            "Table Size" : 2,
+            "Table Rotation" : 0,
+            "Raise up table" : () => app.emitEvent('mouseDown', 'btn_up'),
+            "Drop table" : () => app.emitEvent('mouseDown', 'btn_Down')
+        }
+        
+        this.#getObjectByName(this.furnitures.table.name).visible = false;
+        let TB_zMin = -((this.floor.width - this.furnitures.table.width)/2 - this.walls.thickness);
+        let TB_zMax = ((this.floor.width - this.furnitures.table.width)/2 - this.walls.thickness);
+        let TB_yMin = 0.5;
+        let TB_yMax = 0.6; 
+        let TB_xMin = -((this.floor.length - this.furnitures.table.length)/2 - this.walls.thickness);
+        let TB_xMax = ((this.floor.length - this.furnitures.table.length)/2 - this.walls.thickness);
+        this.#setDragDropLimits(this.furnitures.table.name,"DragDrop","limits",TB_xMin , TB_xMax , TB_yMin , TB_yMax , TB_zMin , TB_zMax);
+        furnituresFolder.add( tableData , "Table").onChange( value => {
+            this.#getObjectByName(this.furnitures.table.name).visible = value;
+        });
+        furnituresFolder.add( tableData , "Table Size", this.furnitures.table.size).onChange( value => {
+            switch (value) {
+                case 1:
+                    app.emitEvent('mouseDown', 'btn_Cube140');
+                    break;
+                case 2:
+                    app.emitEvent('mouseDown', 'btn_Cube160');
+                    break;
+                case 3:
+                    app.emitEvent('mouseDown', 'btn_Cube180');
+                    break;              
+                default:
+                    app.emitEvent('mouseDown', 'btn_Cube160');
+                    break;
+            }
+        });
+        furnituresFolder.add( tableData , "Table Rotation", -3.14,3.14,0.01).onChange( value => {
+            this.#getObjectByName(this.furnitures.table.name).rotation.y = value;
+        });
+        furnituresFolder.add( tableData , "Raise up table");
+        furnituresFolder.add( tableData , "Drop table");
         
         // console.log(app.findObjectByName("Window"))
         
@@ -510,6 +633,7 @@ class Custom_GUI extends GUI{
 
         let limits_DWB =  this.getEventData(this.doors.backDoor,"DragDrop","limits");
         let limits_Radiator =  this.getEventData(this.furnitures.radiator.name,"DragDrop","limits");
+        let limits_Table =  this.getEventData(this.furnitures.table.name,"DragDrop","limits");
         // this._splineApp._resize();
         // console.log(limits_DWB);
         switch (parameter) {
@@ -560,6 +684,8 @@ class Custom_GUI extends GUI{
                 this.#setDragDropLimits(this.doors.backDoor,"DragDrop","limits",-(this.floor.length/2 - this.walls.thickness),(this.floor.length/2 - this.walls.thickness),limits_DWB[2],limits_DWB[3],-(value/2 - this.walls.thickness),(value/2 - this.walls.thickness));
                 //Radiator
                 this.#setDragDropLimits(this.furnitures.radiator.name,"DragDrop","limits",-(this.floor.length/2 - this.walls.thickness),(this.floor.length/2 - this.walls.thickness),limits_Radiator[2],limits_Radiator[3],-(value/2 - this.walls.thickness),(value/2 - this.walls.thickness));
+                //Table
+                this.#setDragDropLimits(this.furnitures.table.name,"DragDrop","limits",-((this.floor.length - this.furnitures.table.length)/2 - this.walls.thickness) , ((this.floor.length - this.furnitures.table.length)/2 - this.walls.thickness) , limits_Table[2] , limits_Table[3] , -((value - this.furnitures.table.width)/2 - this.walls.thickness) , ((value - this.furnitures.table.width)/2 - this.walls.thickness));
                 break;
             case "floorLength":
                 this.floor.length = value;
@@ -607,6 +733,8 @@ class Custom_GUI extends GUI{
                 this.#setDragDropLimits(this.doors.backDoor,"DragDrop","limits",-(value/2 - this.walls.thickness),(value/2 - this.walls.thickness),limits_DWB[2],limits_DWB[3],-(this.floor.width/2 - this.walls.thickness),(this.floor.width/2 - this.walls.thickness));
                 //Radiator
                 this.#setDragDropLimits(this.furnitures.radiator.name,"DragDrop","limits",-(value/2 - this.walls.thickness),(value/2 - this.walls.thickness),limits_Radiator[2],limits_Radiator[3],-(this.floor.width/2 - this.walls.thickness),(this.floor.width/2 - this.walls.thickness));
+                //Table
+                this.#setDragDropLimits(this.furnitures.table.name,"DragDrop","limits",-((value - this.furnitures.table.length)/2 - this.walls.thickness) , ((value - this.furnitures.table.length)/2 - this.walls.thickness) , limits_Table[2] , limits_Table[3] , -((this.floor.width - this.furnitures.table.width)/2 - this.walls.thickness), ((this.floor.width - this.furnitures.table.width)/2 - this.walls.thickness));
                 break;      
             case "wallsHeight":
                 this.walls.height = value;
@@ -928,6 +1056,21 @@ class Custom_GUI extends GUI{
             }
         });
         return filteredKeys;
+    }
+
+    #filterObjectsListByName(objectsList,...keywords){
+        let objects =  _.filter(objectsList, m => {
+            let includes = [];
+            _.each(keywords, keyword => {
+                includes.push(m.name.includes(keyword));
+            });
+            return _.some(includes); 
+        });
+        if(objects){
+            return _.map(objects, m => m.name)
+        }else{
+            return {};
+        }   
     }
 
     getEventData(objectName,eventName,eventParameter){
