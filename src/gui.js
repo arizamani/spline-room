@@ -91,6 +91,43 @@ class Custom_GUI extends GUI{
                     small: 1,
                     medium: 2,
                     large: 3
+                },
+                type:{
+                    outlineCarbon: 1,
+                    outline:2,
+                    void:3,
+                    sola:4
+                },
+                addon:{
+                    cupHolder: {
+                        none: 0,
+                        type1: 1,
+                        type2: 2,
+                        type3: 3,
+                        type4: 4
+                    },
+                    cableManagement:{
+                        type1: 1
+                    },
+                    headsetHolder:{
+                        type1: 1
+                    }
+                },
+                state:{
+                    outlineCarbon: true,
+                    outline:false,
+                    void:false,
+                    sola:false,
+                    cupHolder1: false,
+                    cupHolder2: false,
+                    cupHolder3: false,
+                    cupHolder4: false,
+                    cableManagement1: false,
+                    headsetHolder1: false
+                },
+                color:{
+                    white: 1,
+                    black: 2
                 }
             }
 
@@ -563,10 +600,30 @@ class Custom_GUI extends GUI{
             "Table Size" : 2,
             "Table Rotation" : 0,
             "Raise up table" : () => app.emitEvent('mouseDown', 'btn_up'),
-            "Drop table" : () => app.emitEvent('mouseDown', 'btn_Down')
+            "Drop table" : () => app.emitEvent('mouseDown', 'btn_Down'),
+            "Table Model": 1,
+            "Table Color": 2,
+            "Cup Holder": 0,
+            "Headset Holder": false,
+            "Cable Tray": false
         }
-        
+        //Initializing
         this.#getObjectByName(this.furnitures.table.name).visible = false;
+        //=> table top
+        this.#getObjectByName("Outline Carbon").visible = this.furnitures.table.state.outlineCarbon;
+        this.#getObjectByName("Outline").visible = this.furnitures.table.state.outline;
+        this.#getObjectByName("Void").visible = this.furnitures.table.state.void;
+        this.#getObjectByName("Sola").visible = this.furnitures.table.state.sola;
+        //=> cup holder
+        this.#getObjectByName("Cupholder1").visible = this.furnitures.table.state.cupHolder1;
+        this.#getObjectByName("Cupholder2").visible = this.furnitures.table.state.cupHolder2;
+        this.#getObjectByName("Cupholder3").visible = this.furnitures.table.state.cupHolder3;
+        this.#getObjectByName("Cupholder4").visible = this.furnitures.table.state.cupHolder4;
+        //=> cable try
+        this.#getObjectByName("Cable_Tray_LP").visible = false;
+        //=> headset holder
+        this.#getObjectByName("Headset_Holder").visible = false;
+
         let TB_zMin = -((this.floor.width - this.furnitures.table.width)/2 - this.walls.thickness);
         let TB_zMax = ((this.floor.width - this.furnitures.table.width)/2 - this.walls.thickness);
         let TB_yMin = 0.5;
@@ -575,6 +632,10 @@ class Custom_GUI extends GUI{
         let TB_xMax = ((this.floor.length - this.furnitures.table.length)/2 - this.walls.thickness);
         this.#setDragDropLimits(this.furnitures.table.name,"DragDrop","limits",TB_xMin , TB_xMax , TB_yMin , TB_yMax , TB_zMin , TB_zMax);
         furnituresFolder.add( tableData , "Table").onChange( value => {
+            this.#getObjectByName("Outline Carbon").visible = this.furnitures.table.state.outlineCarbon;
+            this.#getObjectByName("Outline").visible = this.furnitures.table.state.outline;
+            this.#getObjectByName("Void").visible = this.furnitures.table.state.void;
+            this.#getObjectByName("Sola").visible = this.furnitures.table.state.sola;
             this.#getObjectByName(this.furnitures.table.name).visible = value;
         });
         furnituresFolder.add( tableData , "Table Size", this.furnitures.table.size).onChange( value => {
@@ -598,7 +659,145 @@ class Custom_GUI extends GUI{
         });
         furnituresFolder.add( tableData , "Raise up table");
         furnituresFolder.add( tableData , "Drop table");
-        
+
+        furnituresFolder.add( tableData , "Table Model", this.furnitures.table.type).onChange( value => {
+            switch (value) {
+                case 1:
+                    this.#getObjectByName("Outline Carbon").visible = true;
+                    this.#getObjectByName("Outline").visible = false;
+                    this.#getObjectByName("Void").visible = false;
+                    this.#getObjectByName("Sola").visible = false;
+                    this.furnitures.table.state.outlineCarbon = true;
+                    this.furnitures.table.state.outline = false;
+                    this.furnitures.table.state.void = false;
+                    this.furnitures.table.state.sola = false;
+                    break;
+                case 2:
+                    this.#getObjectByName("Outline Carbon").visible = false;
+                    this.#getObjectByName("Outline").visible = true;
+                    this.#getObjectByName("Void").visible = false;
+                    this.#getObjectByName("Sola").visible = false;
+                    this.furnitures.table.state.outlineCarbon = false;
+                    this.furnitures.table.state.outline = true;
+                    this.furnitures.table.state.void = false;
+                    this.furnitures.table.state.sola = false;
+                    break;
+                case 3:
+                    this.#getObjectByName("Outline Carbon").visible = false;
+                    this.#getObjectByName("Outline").visible = false;
+                    this.#getObjectByName("Void").visible = true;
+                    this.#getObjectByName("Sola").visible = false;
+                    this.furnitures.table.state.outlineCarbon = false;
+                    this.furnitures.table.state.outline = false;
+                    this.furnitures.table.state.void = true;
+                    this.furnitures.table.state.sola = false;
+                    break;   
+                case 4:
+                    this.#getObjectByName("Outline Carbon").visible = false;
+                    this.#getObjectByName("Outline").visible = false;
+                    this.#getObjectByName("Void").visible = false;
+                    this.#getObjectByName("Sola").visible = true;
+                    this.furnitures.table.state.outlineCarbon = false;
+                    this.furnitures.table.state.outline = false;
+                    this.furnitures.table.state.void = false;
+                    this.furnitures.table.state.sola = true;
+                    break;            
+                default:
+                    this.#getObjectByName("Outline Carbon").visible = true;
+                    this.#getObjectByName("Outline").visible = false;
+                    this.#getObjectByName("Void").visible = false;
+                    this.#getObjectByName("Sola").visible = false;
+                    this.furnitures.table.state.outlineCarbon = true;
+                    this.furnitures.table.state.outline = false;
+                    this.furnitures.table.state.void = false;
+                    this.furnitures.table.state.sola = false;
+                    break;
+            }
+        });
+        furnituresFolder.add( tableData , "Table Color", this.furnitures.table.color).onChange( value => {
+            switch (value) {
+                case 1:
+                    app.emitEvent('mouseDown', 'btn_ColorW');
+                    break;
+                case 2:
+                    app.emitEvent('mouseDown', 'btn_ColorB');
+                    break;             
+                default:
+                    app.emitEvent('mouseDown', 'btn_ColorB');
+                    break;
+            }
+        });
+        furnituresFolder.add( tableData , "Cable Tray").onChange( value => {
+            this.#getObjectByName("Cable_Tray_LP").visible = value;
+        });
+        furnituresFolder.add( tableData , "Cup Holder", this.furnitures.table.addon.cupHolder).onChange( value => {
+            console.log(value);
+            switch (value) {
+                case 0:
+                    this.#getObjectByName("Cupholder1").visible = false;
+                    this.#getObjectByName("Cupholder2").visible = false;
+                    this.#getObjectByName("Cupholder3").visible = false;
+                    this.#getObjectByName("Cupholder4").visible = false;
+                    this.furnitures.table.state.cupHolder1 = false;
+                    this.furnitures.table.state.cupHolder2 = false;
+                    this.furnitures.table.state.cupHolder3 = false;
+                    this.furnitures.table.state.cupHolder4 = false;
+                    break;
+                case 1:
+                    this.#getObjectByName("Cupholder1").visible = true;
+                    this.#getObjectByName("Cupholder2").visible = false;
+                    this.#getObjectByName("Cupholder3").visible = false;
+                    this.#getObjectByName("Cupholder4").visible = false;
+                    this.furnitures.table.state.cupHolder1 = true;
+                    this.furnitures.table.state.cupHolder2 = false;
+                    this.furnitures.table.state.cupHolder3 = false;
+                    this.furnitures.table.state.cupHolder4 = false;
+                    break;
+                case 2:
+                    this.#getObjectByName("Cupholder1").visible = false;
+                    this.#getObjectByName("Cupholder2").visible = true;
+                    this.#getObjectByName("Cupholder3").visible = false;
+                    this.#getObjectByName("Cupholder4").visible = false;
+                    this.furnitures.table.state.cupHolder1 = false;
+                    this.furnitures.table.state.cupHolder2 = true;
+                    this.furnitures.table.state.cupHolder3 = false;
+                    this.furnitures.table.state.cupHolder4 = false;
+                    break;
+                case 3:
+                    this.#getObjectByName("Cupholder1").visible = false;
+                    this.#getObjectByName("Cupholder2").visible = false;
+                    this.#getObjectByName("Cupholder3").visible = true;
+                    this.#getObjectByName("Cupholder4").visible = false;
+                    this.furnitures.table.state.cupHolder1 = false;
+                    this.furnitures.table.state.cupHolder2 = false;
+                    this.furnitures.table.state.cupHolder3 = true;
+                    this.furnitures.table.state.cupHolder4 = false;
+                    break;   
+                case 4:
+                    this.#getObjectByName("Cupholder1").visible = false;
+                    this.#getObjectByName("Cupholder2").visible = false;
+                    this.#getObjectByName("Cupholder3").visible = false;
+                    this.#getObjectByName("Cupholder4").visible = true;
+                    this.furnitures.table.state.cupHolder1 = false;
+                    this.furnitures.table.state.cupHolder2 = false;
+                    this.furnitures.table.state.cupHolder3 = false;
+                    this.furnitures.table.state.cupHolder4 = true;
+                    break;            
+                default:
+                    this.#getObjectByName("Cupholder1").visible = true;
+                    this.#getObjectByName("Cupholder2").visible = false;
+                    this.#getObjectByName("Cupholder3").visible = false;
+                    this.#getObjectByName("Cupholder4").visible = false;
+                    this.furnitures.table.state.cupHolder1 = true;
+                    this.furnitures.table.state.cupHolder2 = false;
+                    this.furnitures.table.state.cupHolder3 = false;
+                    this.furnitures.table.state.cupHolder4 = false;
+                    break;
+            }
+        });
+        furnituresFolder.add( tableData , "Headset Holder").onChange( value => {
+            this.#getObjectByName("Headset_Holder").visible = value;
+        });
         // console.log(app.findObjectByName("Window"))
         
         this.show(); 
