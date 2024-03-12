@@ -219,7 +219,7 @@ class Custom_GUI extends GUI{
         let variables = app.getVariables();
         let objects = app.getAllObjects();
         let filteredWalls = {};
-        console.log(this.#filterObjectsListByName(objects,"Btn","btn"));
+        // console.log(this.#filterObjectsListByName(objects,"Btn","btn"));
         let uiControllers = this.#filterObjectsListByName(objects,"Btn","btn");
         _.each(uiControllers, m => this.#getObjectByName(m).visible = false);
         
@@ -911,6 +911,7 @@ class Custom_GUI extends GUI{
     #updateWalls(parameter,value){
 
         let windowExtrudeWidth = this._splineApp.getVariable("windowExtrudeWidth");
+        let windowExtrudeDepth = this._splineApp.getVariable("windowExtrudeDepth");
         /*the followinf value should be multiply with scale, because WWR is
         a group or component object and Spline couldn't handle size automaticaly
         so we change scale eachtime in update function. thus we multiply
@@ -949,7 +950,7 @@ class Custom_GUI extends GUI{
                 this._splineApp.setVariable("wallRightPosition_Z",-(value/2 - this.walls.thickness/2));
                 //Windows
                 /*On Right Wall*/
-                this.#getObjectByName(this.windows.rightWindow.name).position.z = -(value/2 - this.walls.thickness- windowExtrudeWidth/2);
+                this.#getObjectByName(this.windows.rightWindow.name).position.z = -(value/2 - this.walls.thickness- windowExtrudeDepth/2);
                 /*On Back Wall*/
                 this.#setDragDropLimits(this.windows.backWindow.name,"DragDrop","limits",-Infinity,Infinity,limits_WWB[2],limits_WWB[3],-(value/2 - windowFrameWidthWWB/2 - this.walls.thickness - this.windowFixedToSide),(value/2 - windowFrameWidthWWB/2 - this.walls.thickness - this.windowFixedToSide));
                 /*this is an additional limitaion for window position
@@ -963,7 +964,7 @@ class Custom_GUI extends GUI{
                     this.#getObjectByName(this.windows.backWindow.name).position.z = -(value/2 - windowFrameWidthWWB/2 - this.walls.thickness - this.windowFixedToSide);
                 }
                 /*On Left Wall*/
-                this.#getObjectByName(this.windows.leftWindow.name).position.z = (value/2 - this.walls.thickness- windowExtrudeWidth/2);
+                this.#getObjectByName(this.windows.leftWindow.name).position.z = (value/2 - this.walls.thickness- windowExtrudeDepth/2);
                 /*On Front Wall*/
                 this.#setDragDropLimits(this.windows.frontWindow.name,"DragDrop","limits",-Infinity,Infinity,limits_WWF[2],limits_WWF[3],-(value/2 - windowFrameWidthWWF/2 - this.walls.thickness - this.windowFixedToSide),(value/2 - windowFrameWidthWWF/2 - this.walls.thickness - this.windowFixedToSide));
                 /*this is an additional limitaion for window position
@@ -1011,7 +1012,7 @@ class Custom_GUI extends GUI{
                     this.#getObjectByName(this.windows.rightWindow.name).position.x = -(value/2 - windowFrameWidthWWR/2 - this.walls.thickness - this.windowFixedToSide);
                 }
                 /*On Back Wall*/
-                this.#getObjectByName(this.windows.backWindow.name).position.x = -(value/2 - this.walls.thickness- windowExtrudeWidth/2);
+                this.#getObjectByName(this.windows.backWindow.name).position.x = -(value/2 - this.walls.thickness- windowExtrudeDepth/2);
                 /*On Left Wall*/
                 this.#setDragDropLimits(this.windows.leftWindow.name,"DragDrop","limits",-(value/2 - windowFrameWidthWWL/2 - this.walls.thickness - this.windowFixedToSide),(value/2 - windowFrameWidthWWL/2 - this.windowFixedToSide),limits_WWL[2],limits_WWL[3],-Infinity,Infinity);
                 /*this is an additional limitaion for window position
@@ -1025,7 +1026,7 @@ class Custom_GUI extends GUI{
                     this.#getObjectByName(this.windows.leftWindow.name).position.x = -(value/2 - windowFrameWidthWWL/2 - this.walls.thickness - this.windowFixedToSide);
                 }
                 /*On Front Wall*/
-                this.#getObjectByName(this.windows.frontWindow.name).position.x = (value/2 - this.walls.thickness- windowExtrudeWidth/2);
+                this.#getObjectByName(this.windows.frontWindow.name).position.x = (value/2 - this.walls.thickness- windowExtrudeDepth/2);
                 //Cornice
                 this.#getObjectByName(this.cornice.frontCornice).position.x = (value/2 - this.walls.thickness - this.cornice.thickness/2);
                 this.#getObjectByName(this.cornice.backCornice).position.x = -(value/2 - this.walls.thickness - this.cornice.thickness/2)
