@@ -17,9 +17,9 @@
         <p id="change-text-container-notification" class="notification"></p>
         <div id="change-text-container-notification-bar" class="waiting-animation-bar hide"></div>
       </div>
-      <!-- <div class="row">
+      <div class="row">
         <button id="log">log</button>
-      </div> -->
+      </div>
     </div>
     <div id="gui-container"></div>
     <div id="pre-loader"></div>
@@ -30,7 +30,7 @@
     <script type="importmap">
       {
         "imports": {
-          "@splinetool/runtime": "https://unpkg.com/@splinetool/runtime@1.0.62/build/runtime.js",
+          "@splinetool/runtime": "https://unpkg.com/@splinetool/runtime@1.0.65/build/runtime.js",
           "lil-gui": "https://cdn.jsdelivr.net/npm/lil-gui@0.19/+esm",
           "underscore" : "https://unpkg.com/underscore@1.13.6/underscore-esm-min.js",
           "anime": "https://cdn.jsdelivr.net/npm/animejs@3.2.2/+esm"
@@ -52,7 +52,7 @@
         let changeTextInput = document.getElementById("change-text-input");
         let changeTextNotification = document.getElementById("change-text-container-notification");
         let changeTextNotificationBar = document.getElementById("change-text-container-notification-bar");
-        // let logCTA = document.getElementById("log");
+        let logCTA = document.getElementById("log");
 
         changeTextCTA.addEventListener("click",loadSplineModels);
 
@@ -86,6 +86,11 @@
               document.getElementById("canvas3d").remove();
             }
             let canvas = document.createElement('canvas');
+
+
+
+
+
             canvas.id = "canvas3d";
             document.body.insertBefore(canvas,document.body.firstChild);
 
@@ -95,7 +100,8 @@
                 waitingPresentaionEnd(changeTextNotificationBar,waiting);
                 toggleTruthy(changeTextNotification,"true-condition","false-condition","waiting-condition");
                 changeTextNotification.innerText = "Load Spline Models Successfully.";
-                // console.log(app.getVariables());
+
+                console.log(app);
                 // console.log(app.getAllObjects());
                 // let objects = app.getAllObjects();
                 gui = new Custom_GUI(app);
@@ -103,10 +109,13 @@
                 setTimeout(function(){
                   document.getElementById("pre-loader").style.display ="none";
                 }, 1500);
+
+
+
                 
-                // logCTA.addEventListener("click",function(){
-                //   console.log(app);
-                // });
+                logCTA.addEventListener("click",function(){
+                  console.log(app);
+                });
             }).catch(e => {
               waitingPresentaionEnd(changeTextNotificationBar,waiting);
               toggleTruthy(changeTextNotification,"false-condition","true-condition","waiting-condition");

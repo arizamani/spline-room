@@ -213,9 +213,7 @@ class Custom_GUI extends GUI{
     }
 
     init(app){
-        app.addEventListener('DragDrop', (e) => {
-				console.log('I have been clicked!');
-		});
+
         let variables = app.getVariables();
         let objects = app.getAllObjects();
         let filteredWalls = {};
@@ -611,7 +609,8 @@ class Custom_GUI extends GUI{
 
         /*Create datas => Doors*/
         if (!_.isEmpty(doors)){
-            this.#setDragDropLimits(this.doors.backDoor,"DragDrop","limits",-(this.floor.length/2 - this.walls.thickness - this.doors.thickness),(this.floor.length/2 - this.walls.thickness - this.doors.thickness),(this.doors.height/2),(this.doors.height/2 + 0.1),-(this.floor.width/2 - this.walls.thickness),(this.floor.width/2 - this.walls.thickness));
+            let doorDimension = this.#calculateOBjectDimension(this.doors.backDoor);
+            // this.#setDragDropLimits(this.doors.backDoor,"DragDrop","limits",-(this.floor.length/2 - this.walls.thickness - doorDimension.x/2),(this.floor.length/2 - this.walls.thickness -  doorDimension.x/2),(this.doors.height/2),(this.doors.height/2 + 0.1),-(this.floor.width/2 - this.walls.thickness -  doorDimension.z/2),(this.floor.width/2 - this.walls.thickness - doorDimension.z/2));
             let doorsFolder = this.addFolder("Doors");
             //For Back Door
             this.#getObjectByName(this.doors.backDoor).visible = this.doors.state.backDoor.visibility;
@@ -708,13 +707,13 @@ class Custom_GUI extends GUI{
         //=> monitor
         this.#getObjectByName("Monitor_UltraW").visible = this.furnitures.table.state.monitor1;
 
-        let TB_zMin = -((this.floor.width - this.furnitures.table.width)/2 - this.walls.thickness);
-        let TB_zMax = ((this.floor.width - this.furnitures.table.width)/2 - this.walls.thickness);
-        let TB_yMin = 0.5;
-        let TB_yMax = 0.6; 
-        let TB_xMin = -((this.floor.length - this.furnitures.table.length)/2 - this.walls.thickness);
-        let TB_xMax = ((this.floor.length - this.furnitures.table.length)/2 - this.walls.thickness);
-        this.#setDragDropLimits(this.furnitures.table.name,"DragDrop","limits",TB_xMin , TB_xMax , TB_yMin , TB_yMax , TB_zMin , TB_zMax);
+        // let TB_zMin = -((this.floor.width - this.furnitures.table.width)/2 - this.walls.thickness);
+        // let TB_zMax = ((this.floor.width - this.furnitures.table.width)/2 - this.walls.thickness);
+        // let TB_yMin = 0.5;
+        // let TB_yMax = 0.6; 
+        // let TB_xMin = -((this.floor.length - this.furnitures.table.length)/2 - this.walls.thickness);
+        // let TB_xMax = ((this.floor.length - this.furnitures.table.length)/2 - this.walls.thickness);
+        // this.#setDragDropLimits(this.furnitures.table.name,"DragDrop","limits",TB_xMin , TB_xMax , TB_yMin , TB_yMax , TB_zMin , TB_zMax);
         furnituresFolder.add( tableData , "Table").onChange( value => {
             this.#getObjectByName("Outline Carbon").visible = this.furnitures.table.state.outlineCarbon;
             this.#getObjectByName("Outline").visible = this.furnitures.table.state.outline;
@@ -904,6 +903,63 @@ class Custom_GUI extends GUI{
         
         this.show(); 
         
+        /*Detect Dragable object*/
+        let dragData = {};
+        let exclude = [this.windows.rightWindow.name,this.windows.frontWindow.name,this.windows.leftWindow.name,this.windows.backWindow.name]
+        this.#calculateOBjectDimension("Table Black");
+        if(app){
+            app.canvas.addEventListener("pointerdown",() => {
+                dragData = {}
+                if(_.has(app._eventManager.handlers["DragDrop"],"activeEvent") && app._eventManager.handlers.DragDrop.activeEvent != null){
+                    
+                    dragData.dragObjectName =  app._eventManager.handlers.DragDrop.activeEvent.object.name;
+                    dragData.dragObjectDimension = this.#calculateOBjectDimension(dragData.dragObjectName);
+                    if(!_.contains(exclude,dragData.dragObjectName)){
+                        this.#setDragDropLimits(dragData.dragObjectName,"DragDrop","limits",-(this.floor.length/2 - this.walls.thickness - dragData.dragObjectDimension.x/2),(this.floor.length/2 - this.walls.thickness -  dragData.dragObjectDimension.x/2),(dragData.dragObjectDimension.y/2),(dragData.dragObjectDimension.y/2 + 0.1),-(this.floor.width/2 - this.walls.thickness -  dragData.dragObjectDimension.z/2),(this.floor.width/2 - this.walls.thickness - dragData.dragObjectDimension.z/2));
+                    }
+                   
+                    // dragData.dragObjectDimension = this.#calculateOBjectDimension(dragData.dragObjectName);
+                    // console.log(dragData);
+                } 
+                
+            });
+            app.canvas.addEventListener("pointermove",() => {
+                if(_.has(dragData,"dragObjectName") && dragData.dragObjectName != null && !_.contains(exclude,dragData.dragObjectName)){
+                    // console.log(this.#getObjectByName(dragData.dragObject).position.z); 
+                    // if(this.#getObjectByName(dragData.dragObject).position.z > 131){
+                    //     this.#getObjectByName(dragData.dragObject).position.z = 131
+                    // }
+                    if(_.has(app._eventManager.handlers["DragDrop"],"lastDropDestination") && app._eventManager.handlers.DragDrop.lastDropDestination != null /*&& dragData.dragTarget != app._eventManager.handlers.DragDrop.lastDropDestination.name*/ ){
+                        dragData.dragObjectDimension = this.#calculateOBjectDimension(dragData.dragObjectName);
+
+                        this.#setDragDropLimits(dragData.dragObjectName,"DragDrop","limits",-(this.floor.length/2 - this.walls.thickness - dragData.dragObjectDimension.x/2),(this.floor.length/2 - this.walls.thickness -  dragData.dragObjectDimension.x/2),(dragData.dragObjectDimension.y/2),(dragData.dragObjectDimension.y/2 + 0.1),-(this.floor.width/2 - this.walls.thickness -  dragData.dragObjectDimension.z/2),(this.floor.width/2 - this.walls.thickness - dragData.dragObjectDimension.z/2));
+                        
+                        if (this.#getObjectByName(dragData.dragObjectName).position.z < -((this.floor.width - dragData.dragObjectDimension.z)/2 - this.walls.thickness)){
+                            this.#getObjectByName(dragData.dragObjectName).position.z = -((this.floor.width - dragData.dragObjectDimension.z)/2 - this.walls.thickness);
+                        }
+                        if (this.#getObjectByName(dragData.dragObjectName).position.z > ((this.floor.width - dragData.dragObjectDimension.z)/2 - this.walls.thickness)){
+                            this.#getObjectByName(dragData.dragObjectName).position.z = ((this.floor.width - dragData.dragObjectDimension.z)/2 - this.walls.thickness);
+                        }
+
+                        if (this.#getObjectByName(dragData.dragObjectName).position.x < -((this.floor.length - dragData.dragObjectDimension.x)/2 - this.walls.thickness)){
+                            this.#getObjectByName(dragData.dragObjectName).position.x = -((this.floor.length - dragData.dragObjectDimension.x)/2 - this.walls.thickness);
+                        }
+                        if (this.#getObjectByName(dragData.dragObjectName).position.x > ((this.floor.length - dragData.dragObjectDimension.x)/2 - this.walls.thickness)){
+                            this.#getObjectByName(dragData.dragObjectName).position.x = ((this.floor.length - dragData.dragObjectDimension.x)/2 - this.walls.thickness);
+                        }
+
+
+                        dragData.dragTarget =  app._eventManager.handlers.DragDrop.lastDropDestination.name;
+                        console.log(dragData)   
+                    }
+                }
+                
+            });
+            app.canvas.addEventListener("pointerup",() => {
+                dragData = {};
+            });
+        }
+
         // this.controllers = this.controllersRecursive();
         // console.log(this.controllersRecursive());
     }
@@ -1441,7 +1497,7 @@ class Custom_GUI extends GUI{
         return value;
     }
 
-    #setDragDropLimits(objectName,eventName,eventParameter,xMin,xMax,yMin,yMax,zMin,zMax){
+    #setDragDropLimits(objectName,eventName,eventParameter,xMin,xMax,yMin,yMax,zMin,zMax,onFloor = false){
         this._splineApp._scene.traverse( children => {
             if(children.name == objectName){
                 // console.log(children.data.events);
@@ -1454,8 +1510,8 @@ class Custom_GUI extends GUI{
                     if (eventData[eventParameter]){
                         eventData.limits[0] = xMin;
                         eventData.limits[1] = xMax;
-                        eventData.limits[2] = yMin;
-                        eventData.limits[3] = yMax;
+                        eventData.limits[2] = onFloor ? 0 : yMin;
+                        eventData.limits[3] = onFloor ? 0.1 : yMax;
                         eventData.limits[4] = zMin;
                         eventData.limits[5] = zMax;
                         // console.log( this.getEventData("Window","DragDrop","limits"));
@@ -1489,6 +1545,25 @@ class Custom_GUI extends GUI{
                 disable(a){console.log(a)}
             };
         }
+    }
+
+    #calculateOBjectDimension(name){
+        let objects = this._splineApp._scene.children[0].children;
+        let target = _.filter(objects, m => m.name == name);
+        let max = target[0].recursiveBBox.max;
+        let min = target[0].recursiveBBox.min;
+        let tetha =  target[0].rotation.y;
+        let alpha =  Math.atan(((max.z - min.z) * target[0].scale.z) / ((max.x - min.x) * target[0].scale.x));
+        let r = Math.sqrt(Math.pow((max.x - min.x) * target[0].scale.x,2) + Math.pow((max.z - min.z) * target[0].scale.z,2));
+
+        let volumeDimension = {
+            x: Math.abs(r * Math.cos(alpha - tetha)),
+            y: Math.abs(max.y - min.y),
+            z: Math.abs(r * Math.sin(alpha + tetha)),
+        }
+        // console.log(target[0].recursiveBBox);
+        // console.log(volumeDimension);
+        return volumeDimension;
     }
 }
 

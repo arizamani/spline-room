@@ -8,7 +8,7 @@ function splineApp(canvas,url){
        
 
         app.load(url).then( () => {
-            console.log(app)
+            console.log(app._scene.children[0].children[0].recursiveBBox)
             checkLoadState = true;
         }).catch(e => {
             checkLoadState = false;
