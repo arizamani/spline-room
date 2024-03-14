@@ -23,6 +23,55 @@
     </div>
     <div id="gui-container"></div>
     <div id="pre-loader"></div>
+    <div id="object-info-container">
+
+      <p class="row">
+        <span class="info-title">Name:</span>
+        <span class="info-value" id="object-name"></span>
+      </p>
+      <p class="row">
+        <span class="info-label">Distances</span>
+      </p>
+      <p class="row">
+        <span class="info-title">To Front:</span>
+        <span class="info-value" id="to-front"></span>
+      </p>
+      <p class="row">
+        <span class="info-title">To Back:</span>
+        <span class="info-value" id="to-back"></span>
+      </p>
+      <p class="row">
+        <span class="info-title">To Left:</span>
+        <span class="info-value" id="to-left"></span>
+      </p>
+      <p class="row">
+        <span class="info-title">To Right:</span>
+        <span class="info-value" id="to-right"></span>
+      </p>
+      <p class="row">
+        <span class="info-title">To Top:</span>
+        <span class="info-value" id="to-top"></span>
+      </p>
+      <p class="row">
+        <span class="info-title">To Bottom:</span>
+        <span class="info-value" id="to-bottom"></span>
+      </p>
+      <p class="row">
+        <span class="info-label">Dimensions</span>
+      </p>
+      <p class="row">
+        <span class="info-title">Width:</span>
+        <span class="info-value" id="width"></span>
+      </p>
+      <p class="row">
+        <span class="info-title">Length:</span>
+        <span class="info-value" id="length"></span>
+      </p>
+      <p class="row">
+        <span class="info-title">Height:</span>
+        <span class="info-value" id="height"></span>
+      </p>
+    </div>
 
     <!-- Import maps polyfill -->
     <!-- Remove this when import maps will be widely supported -->
@@ -40,8 +89,8 @@
 
     <script type="module"> 
         import {splineApp} from "./src/spline-app.js";
-        import {Custom_GUI} from "./src/gui-min.js";
-        // import {Custom_GUI} from "./src/gui.js";
+        // import {Custom_GUI} from "./src/gui-min.js";
+        import {Custom_GUI} from "./src/gui.js";
         import _ from "underscore";
         import anime from "anime";
 
@@ -105,7 +154,7 @@
                 console.log(app);
                 // console.log(app.getAllObjects());
                 // let objects = app.getAllObjects();
-                gui = new Custom_GUI(app);
+                gui = new Custom_GUI(app,document);
                 gui.init(app);
                 setTimeout(function(){
                   document.getElementById("pre-loader").style.display ="none";

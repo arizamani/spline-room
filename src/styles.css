@@ -91,3 +91,28 @@ canvas {
   height: 100vh;
   background: radial-gradient(#138ba6, #ab8ed4);
 }
+
+#object-info-container{
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 150px;
+  height: 400px;
+  background: #fff;
+  border-radius: 15px;
+  padding: 20px;
+}
+
+.info-label{
+  color: #ab8ed4;
+  font-weight: 700;;
+}
+
+.info-title{
+  font-size: 13px;
+}
+
+.info-value{
+  font-size: 13px;
+  color:#138ba6
+}
