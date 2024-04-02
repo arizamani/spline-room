@@ -165,6 +165,9 @@
                 
                 logCTA.addEventListener("click",function(){
                   console.log(app);
+                  let obj = getObjectByNameFromScene("WWB",app);
+                  console.log(obj);
+                  // app._resize();
                 });
             }).catch(e => {
               waitingPresentaionEnd(changeTextNotificationBar,waiting);
@@ -209,7 +212,15 @@
           animation.remove(target);
           animation.restart();
         }
-
+        function getObjectByNameFromScene(objectName,app){
+          let obj;
+          app._scene.traverse( children => {
+              if(children.name == objectName){
+                  obj = children;
+              }
+          });
+          return obj;
+        }
 
 
 
