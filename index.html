@@ -89,13 +89,12 @@
 
     <script type="module"> 
         import {splineApp} from "./src/spline-app.js";
-        import {Custom_GUI} from "./src/gui-min.js";
-        //import {Custom_GUI} from "./src/gui.js";
+        //import {Custom_GUI} from "./src/gui-min.js";
+        import {Custom_GUI} from "./src/gui.js";
         import _ from "underscore";
         import anime from "anime";
 
         let app,gui,scene=[];
-
 
 
         let changeTextCTA = document.getElementById("change-text-btn");
@@ -165,9 +164,9 @@
                 
                 logCTA.addEventListener("click",function(){
                   console.log(app);
-                  console.log(app._eventManager.handlers.DragDrop.events[5].data.limits);
-                  let obj = getObjectByNameFromScene("Panel1",app);
-                  console.log("Pos x: " + obj.position.x + " Pos z: " + obj.position.z);
+                  console.log(windowObject);
+                  // let obj = getObjectByNameFromScene("Panel1",app);
+                  // console.log("Pos x: " + obj.position.x + " Pos z: " + obj.position.z);
                   // app._resize();
                 });
             }).catch(e => {
