@@ -10,7 +10,8 @@
     <!-- <canvas id="canvas3d"></canvas> -->
     <div class="change-text-container flex-column">
       <div class="row">
-        <input type="text" id="change-text-input" name="change-text-input" placeholder="Enter the spline Link ..." value="https://prod.spline.design/HRtq7AEe24KdcLcV/scene.splinecode">
+        <!--https://prod.spline.design/Eq3JIAfXlqmBTO8s/scene.splinecode -->
+        <input type="text" id="change-text-input" name="change-text-input" placeholder="Enter the spline Link ..." value="https://prod.spline.design/NrGLaPg6rD-mRbLP/scene.splinecode">
         <button id="change-text-btn">Load</button>
       </div>
       <div class="row">
@@ -156,6 +157,8 @@
                 gui = new Custom_GUI(app,document);
                 gui.init(app);
                 setTimeout(function(){
+                  //These are color state for save
+                  app.emitEvent('mouseDown', gui.floor.initialColorButton);
                   document.getElementById("pre-loader").style.display ="none";
                 }, 1500);
 
@@ -164,7 +167,6 @@
                 
                 logCTA.addEventListener("click",function(){
                   console.log(app);
-                  console.log(windowObject);
                   // let obj = getObjectByNameFromScene("Panel1",app);
                   // console.log("Pos x: " + obj.position.x + " Pos z: " + obj.position.z);
                   // app._resize();
